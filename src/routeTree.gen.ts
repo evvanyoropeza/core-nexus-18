@@ -21,6 +21,7 @@ import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
 import { Route as AppAuditRouteImport } from './routes/_app/audit'
 import { Route as AppCustomersIndexRouteImport } from './routes/_app/customers.index'
 import { Route as AppCustomersNewRouteImport } from './routes/_app/customers.new'
+import { Route as AppCustomersCustomerIdRouteImport } from './routes/_app/customers.$customerId'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -81,6 +82,11 @@ const AppCustomersNewRoute = AppCustomersNewRouteImport.update({
   path: '/customers/new',
   getParentRoute: () => AppRoute,
 } as any)
+const AppCustomersCustomerIdRoute = AppCustomersCustomerIdRouteImport.update({
+  id: '/customers/$customerId',
+  path: '/customers/$customerId',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -92,6 +98,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AppDashboardRoute
   '/profile': typeof AppProfileRoute
   '/settings': typeof AppSettingsRoute
+  '/customers/$customerId': typeof AppCustomersCustomerIdRoute
   '/customers/new': typeof AppCustomersNewRoute
   '/customers/': typeof AppCustomersIndexRoute
 }
@@ -105,6 +112,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AppDashboardRoute
   '/profile': typeof AppProfileRoute
   '/settings': typeof AppSettingsRoute
+  '/customers/$customerId': typeof AppCustomersCustomerIdRoute
   '/customers/new': typeof AppCustomersNewRoute
   '/customers': typeof AppCustomersIndexRoute
 }
@@ -120,6 +128,7 @@ export interface FileRoutesById {
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/profile': typeof AppProfileRoute
   '/_app/settings': typeof AppSettingsRoute
+  '/_app/customers/$customerId': typeof AppCustomersCustomerIdRoute
   '/_app/customers/new': typeof AppCustomersNewRoute
   '/_app/customers/': typeof AppCustomersIndexRoute
 }
@@ -135,6 +144,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/profile'
     | '/settings'
+    | '/customers/$customerId'
     | '/customers/new'
     | '/customers/'
   fileRoutesByTo: FileRoutesByTo
@@ -148,6 +158,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/profile'
     | '/settings'
+    | '/customers/$customerId'
     | '/customers/new'
     | '/customers'
   id:
@@ -162,6 +173,7 @@ export interface FileRouteTypes {
     | '/_app/dashboard'
     | '/_app/profile'
     | '/_app/settings'
+    | '/_app/customers/$customerId'
     | '/_app/customers/new'
     | '/_app/customers/'
   fileRoutesById: FileRoutesById
@@ -261,6 +273,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCustomersNewRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/customers/$customerId': {
+      id: '/_app/customers/$customerId'
+      path: '/customers/$customerId'
+      fullPath: '/customers/$customerId'
+      preLoaderRoute: typeof AppCustomersCustomerIdRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
@@ -269,6 +288,7 @@ interface AppRouteChildren {
   AppDashboardRoute: typeof AppDashboardRoute
   AppProfileRoute: typeof AppProfileRoute
   AppSettingsRoute: typeof AppSettingsRoute
+  AppCustomersCustomerIdRoute: typeof AppCustomersCustomerIdRoute
   AppCustomersNewRoute: typeof AppCustomersNewRoute
   AppCustomersIndexRoute: typeof AppCustomersIndexRoute
 }
@@ -278,6 +298,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDashboardRoute: AppDashboardRoute,
   AppProfileRoute: AppProfileRoute,
   AppSettingsRoute: AppSettingsRoute,
+  AppCustomersCustomerIdRoute: AppCustomersCustomerIdRoute,
   AppCustomersNewRoute: AppCustomersNewRoute,
   AppCustomersIndexRoute: AppCustomersIndexRoute,
 }
@@ -295,3 +316,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

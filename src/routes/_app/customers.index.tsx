@@ -22,7 +22,7 @@ import {
   fetchCustomers, toCSV, parseCSV, downloadFile, customerSchema, nullifyEmpty,
 } from "@/lib/customers";
 
-export const Route = createFileRoute("/_app/customers")({
+export const Route = createFileRoute("/_app/customers/")({
   component: CustomersPage,
 });
 

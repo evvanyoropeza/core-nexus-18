@@ -18,8 +18,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppSettingsRouteImport } from './routes/_app/settings'
 import { Route as AppProfileRouteImport } from './routes/_app/profile'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
-import { Route as AppCustomersRouteImport } from './routes/_app/customers'
 import { Route as AppAuditRouteImport } from './routes/_app/audit'
+import { Route as AppCustomersIndexRouteImport } from './routes/_app/customers.index'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -65,14 +65,14 @@ const AppDashboardRoute = AppDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AppRoute,
 } as any)
-const AppCustomersRoute = AppCustomersRouteImport.update({
-  id: '/customers',
-  path: '/customers',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppAuditRoute = AppAuditRouteImport.update({
   id: '/audit',
   path: '/audit',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCustomersIndexRoute = AppCustomersIndexRouteImport.update({
+  id: '/customers/',
+  path: '/customers/',
   getParentRoute: () => AppRoute,
 } as any)
 
@@ -83,10 +83,10 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/audit': typeof AppAuditRoute
-  '/customers': typeof AppCustomersRoute
   '/dashboard': typeof AppDashboardRoute
   '/profile': typeof AppProfileRoute
   '/settings': typeof AppSettingsRoute
+  '/customers/': typeof AppCustomersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -95,10 +95,10 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/audit': typeof AppAuditRoute
-  '/customers': typeof AppCustomersRoute
   '/dashboard': typeof AppDashboardRoute
   '/profile': typeof AppProfileRoute
   '/settings': typeof AppSettingsRoute
+  '/customers': typeof AppCustomersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -109,10 +109,10 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_app/audit': typeof AppAuditRoute
-  '/_app/customers': typeof AppCustomersRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/profile': typeof AppProfileRoute
   '/_app/settings': typeof AppSettingsRoute
+  '/_app/customers/': typeof AppCustomersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -123,10 +123,10 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/audit'
-    | '/customers'
     | '/dashboard'
     | '/profile'
     | '/settings'
+    | '/customers/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -135,10 +135,10 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/audit'
-    | '/customers'
     | '/dashboard'
     | '/profile'
     | '/settings'
+    | '/customers'
   id:
     | '__root__'
     | '/'
@@ -148,10 +148,10 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/_app/audit'
-    | '/_app/customers'
     | '/_app/dashboard'
     | '/_app/profile'
     | '/_app/settings'
+    | '/_app/customers/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -228,13 +228,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDashboardRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/customers': {
-      id: '/_app/customers'
-      path: '/customers'
-      fullPath: '/customers'
-      preLoaderRoute: typeof AppCustomersRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/audit': {
       id: '/_app/audit'
       path: '/audit'
@@ -242,23 +235,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAuditRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/customers/': {
+      id: '/_app/customers/'
+      path: '/customers'
+      fullPath: '/customers/'
+      preLoaderRoute: typeof AppCustomersIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
   AppAuditRoute: typeof AppAuditRoute
-  AppCustomersRoute: typeof AppCustomersRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppProfileRoute: typeof AppProfileRoute
   AppSettingsRoute: typeof AppSettingsRoute
+  AppCustomersIndexRoute: typeof AppCustomersIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppAuditRoute: AppAuditRoute,
-  AppCustomersRoute: AppCustomersRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppProfileRoute: AppProfileRoute,
   AppSettingsRoute: AppSettingsRoute,
+  AppCustomersIndexRoute: AppCustomersIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

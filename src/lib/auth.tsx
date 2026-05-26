@@ -129,7 +129,7 @@ export async function logAudit(input: {
     action: input.action,
     entity_type: input.entityType ?? null,
     entity_id: input.entityId ?? null,
-    metadata: input.metadata ?? {},
+    metadata: (input.metadata ?? {}) as never,
     user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
   });
 }

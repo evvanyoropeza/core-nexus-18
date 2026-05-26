@@ -31,9 +31,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const mainNav = [
+const mainNav: Array<{ to: string; label: string; icon: typeof LayoutDashboard; soon?: boolean }> = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/customers", label: "Clientes", icon: Users, soon: true },
+  { to: "/customers", label: "Clientes", icon: Users },
   { to: "/products", label: "Productos", icon: Package, soon: true },
   { to: "/quotations", label: "Cotizaciones", icon: FileText, soon: true },
 ];

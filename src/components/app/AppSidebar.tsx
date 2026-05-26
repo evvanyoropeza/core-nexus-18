@@ -34,7 +34,7 @@ import {
 const mainNav: Array<{ to: string; label: string; icon: typeof LayoutDashboard; soon?: boolean }> = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/customers", label: "Clientes", icon: Users },
-  { to: "/products", label: "Productos", icon: Package, soon: true },
+  { to: "/products", label: "Productos", icon: Package },
   { to: "/quotations", label: "Cotizaciones", icon: FileText, soon: true },
 ];
 

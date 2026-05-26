@@ -287,6 +287,180 @@ export type Database = {
           },
         ]
       }
+      product_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          parent_id: string | null
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          parent_id?: string | null
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          parent_id?: string | null
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "product_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_categories_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_price_tiers: {
+        Row: {
+          created_at: string
+          id: string
+          min_quantity: number
+          price: number
+          product_id: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          min_quantity: number
+          price: number
+          product_id: string
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          min_quantity?: number
+          price?: number
+          product_id?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_price_tiers_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_price_tiers_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          category_id: string | null
+          cost: number
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          list_price: number
+          name: string
+          notes: string | null
+          sku: string
+          stock_current: number
+          stock_min: number
+          tags: string[]
+          tax_rate: number
+          tenant_id: string
+          type: Database["public"]["Enums"]["product_type"]
+          unit: string
+          updated_at: string
+        }
+        Insert: {
+          category_id?: string | null
+          cost?: number
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          list_price?: number
+          name: string
+          notes?: string | null
+          sku: string
+          stock_current?: number
+          stock_min?: number
+          tags?: string[]
+          tax_rate?: number
+          tenant_id: string
+          type?: Database["public"]["Enums"]["product_type"]
+          unit?: string
+          updated_at?: string
+        }
+        Update: {
+          category_id?: string | null
+          cost?: number
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          list_price?: number
+          name?: string
+          notes?: string | null
+          sku?: string
+          stock_current?: number
+          stock_min?: number
+          tags?: string[]
+          tax_rate?: number
+          tenant_id?: string
+          type?: Database["public"]["Enums"]["product_type"]
+          unit?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "product_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -428,6 +602,8 @@ export type Database = {
         Args: { _tenant_id: string; _user_id: string }
         Returns: boolean
       }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
       app_role:
@@ -437,6 +613,7 @@ export type Database = {
         | "operations"
         | "finance"
         | "viewer"
+      product_type: "product" | "service"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -572,6 +749,7 @@ export const Constants = {
         "finance",
         "viewer",
       ],
+      product_type: ["product", "service"],
     },
   },
 } as const

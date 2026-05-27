@@ -23,11 +23,13 @@ import { Route as AppQuotationsIndexRouteImport } from './routes/_app/quotations
 import { Route as AppProductsIndexRouteImport } from './routes/_app/products.index'
 import { Route as AppCustomersIndexRouteImport } from './routes/_app/customers.index'
 import { Route as AppQuotationsNewRouteImport } from './routes/_app/quotations.new'
+import { Route as AppQuotationsQuotationIdRouteImport } from './routes/_app/quotations.$quotationId'
 import { Route as AppProductsNewRouteImport } from './routes/_app/products.new'
 import { Route as AppProductsCategoriesRouteImport } from './routes/_app/products.categories'
 import { Route as AppProductsProductIdRouteImport } from './routes/_app/products.$productId'
 import { Route as AppCustomersNewRouteImport } from './routes/_app/customers.new'
 import { Route as AppCustomersCustomerIdRouteImport } from './routes/_app/customers.$customerId'
+import { Route as AppQuotationsQuotationIdPrintRouteImport } from './routes/_app/quotations.$quotationId.print'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -98,6 +100,12 @@ const AppQuotationsNewRoute = AppQuotationsNewRouteImport.update({
   path: '/quotations/new',
   getParentRoute: () => AppRoute,
 } as any)
+const AppQuotationsQuotationIdRoute =
+  AppQuotationsQuotationIdRouteImport.update({
+    id: '/quotations/$quotationId',
+    path: '/quotations/$quotationId',
+    getParentRoute: () => AppRoute,
+  } as any)
 const AppProductsNewRoute = AppProductsNewRouteImport.update({
   id: '/products/new',
   path: '/products/new',
@@ -123,6 +131,12 @@ const AppCustomersCustomerIdRoute = AppCustomersCustomerIdRouteImport.update({
   path: '/customers/$customerId',
   getParentRoute: () => AppRoute,
 } as any)
+const AppQuotationsQuotationIdPrintRoute =
+  AppQuotationsQuotationIdPrintRouteImport.update({
+    id: '/print',
+    path: '/print',
+    getParentRoute: () => AppQuotationsQuotationIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -139,10 +153,12 @@ export interface FileRoutesByFullPath {
   '/products/$productId': typeof AppProductsProductIdRoute
   '/products/categories': typeof AppProductsCategoriesRoute
   '/products/new': typeof AppProductsNewRoute
+  '/quotations/$quotationId': typeof AppQuotationsQuotationIdRouteWithChildren
   '/quotations/new': typeof AppQuotationsNewRoute
   '/customers/': typeof AppCustomersIndexRoute
   '/products/': typeof AppProductsIndexRoute
   '/quotations/': typeof AppQuotationsIndexRoute
+  '/quotations/$quotationId/print': typeof AppQuotationsQuotationIdPrintRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -159,10 +175,12 @@ export interface FileRoutesByTo {
   '/products/$productId': typeof AppProductsProductIdRoute
   '/products/categories': typeof AppProductsCategoriesRoute
   '/products/new': typeof AppProductsNewRoute
+  '/quotations/$quotationId': typeof AppQuotationsQuotationIdRouteWithChildren
   '/quotations/new': typeof AppQuotationsNewRoute
   '/customers': typeof AppCustomersIndexRoute
   '/products': typeof AppProductsIndexRoute
   '/quotations': typeof AppQuotationsIndexRoute
+  '/quotations/$quotationId/print': typeof AppQuotationsQuotationIdPrintRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -181,10 +199,12 @@ export interface FileRoutesById {
   '/_app/products/$productId': typeof AppProductsProductIdRoute
   '/_app/products/categories': typeof AppProductsCategoriesRoute
   '/_app/products/new': typeof AppProductsNewRoute
+  '/_app/quotations/$quotationId': typeof AppQuotationsQuotationIdRouteWithChildren
   '/_app/quotations/new': typeof AppQuotationsNewRoute
   '/_app/customers/': typeof AppCustomersIndexRoute
   '/_app/products/': typeof AppProductsIndexRoute
   '/_app/quotations/': typeof AppQuotationsIndexRoute
+  '/_app/quotations/$quotationId/print': typeof AppQuotationsQuotationIdPrintRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -203,10 +223,12 @@ export interface FileRouteTypes {
     | '/products/$productId'
     | '/products/categories'
     | '/products/new'
+    | '/quotations/$quotationId'
     | '/quotations/new'
     | '/customers/'
     | '/products/'
     | '/quotations/'
+    | '/quotations/$quotationId/print'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -223,10 +245,12 @@ export interface FileRouteTypes {
     | '/products/$productId'
     | '/products/categories'
     | '/products/new'
+    | '/quotations/$quotationId'
     | '/quotations/new'
     | '/customers'
     | '/products'
     | '/quotations'
+    | '/quotations/$quotationId/print'
   id:
     | '__root__'
     | '/'
@@ -244,10 +268,12 @@ export interface FileRouteTypes {
     | '/_app/products/$productId'
     | '/_app/products/categories'
     | '/_app/products/new'
+    | '/_app/quotations/$quotationId'
     | '/_app/quotations/new'
     | '/_app/customers/'
     | '/_app/products/'
     | '/_app/quotations/'
+    | '/_app/quotations/$quotationId/print'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -359,6 +385,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppQuotationsNewRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/quotations/$quotationId': {
+      id: '/_app/quotations/$quotationId'
+      path: '/quotations/$quotationId'
+      fullPath: '/quotations/$quotationId'
+      preLoaderRoute: typeof AppQuotationsQuotationIdRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/products/new': {
       id: '/_app/products/new'
       path: '/products/new'
@@ -394,8 +427,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCustomersCustomerIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/quotations/$quotationId/print': {
+      id: '/_app/quotations/$quotationId/print'
+      path: '/print'
+      fullPath: '/quotations/$quotationId/print'
+      preLoaderRoute: typeof AppQuotationsQuotationIdPrintRouteImport
+      parentRoute: typeof AppQuotationsQuotationIdRoute
+    }
   }
 }
+
+interface AppQuotationsQuotationIdRouteChildren {
+  AppQuotationsQuotationIdPrintRoute: typeof AppQuotationsQuotationIdPrintRoute
+}
+
+const AppQuotationsQuotationIdRouteChildren: AppQuotationsQuotationIdRouteChildren =
+  {
+    AppQuotationsQuotationIdPrintRoute: AppQuotationsQuotationIdPrintRoute,
+  }
+
+const AppQuotationsQuotationIdRouteWithChildren =
+  AppQuotationsQuotationIdRoute._addFileChildren(
+    AppQuotationsQuotationIdRouteChildren,
+  )
 
 interface AppRouteChildren {
   AppAuditRoute: typeof AppAuditRoute
@@ -407,6 +461,7 @@ interface AppRouteChildren {
   AppProductsProductIdRoute: typeof AppProductsProductIdRoute
   AppProductsCategoriesRoute: typeof AppProductsCategoriesRoute
   AppProductsNewRoute: typeof AppProductsNewRoute
+  AppQuotationsQuotationIdRoute: typeof AppQuotationsQuotationIdRouteWithChildren
   AppQuotationsNewRoute: typeof AppQuotationsNewRoute
   AppCustomersIndexRoute: typeof AppCustomersIndexRoute
   AppProductsIndexRoute: typeof AppProductsIndexRoute
@@ -423,6 +478,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppProductsProductIdRoute: AppProductsProductIdRoute,
   AppProductsCategoriesRoute: AppProductsCategoriesRoute,
   AppProductsNewRoute: AppProductsNewRoute,
+  AppQuotationsQuotationIdRoute: AppQuotationsQuotationIdRouteWithChildren,
   AppQuotationsNewRoute: AppQuotationsNewRoute,
   AppCustomersIndexRoute: AppCustomersIndexRoute,
   AppProductsIndexRoute: AppProductsIndexRoute,

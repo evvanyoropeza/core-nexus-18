@@ -496,6 +496,152 @@ export type Database = {
           },
         ]
       }
+      quotation_items: {
+        Row: {
+          created_at: string
+          description: string | null
+          discount_pct: number
+          id: string
+          name: string
+          position: number
+          product_id: string | null
+          quantity: number
+          quotation_id: string
+          sku: string | null
+          subtotal: number
+          tax_amount: number
+          tax_rate: number
+          tenant_id: string
+          total: number
+          unit: string
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          discount_pct?: number
+          id?: string
+          name: string
+          position?: number
+          product_id?: string | null
+          quantity?: number
+          quotation_id: string
+          sku?: string | null
+          subtotal?: number
+          tax_amount?: number
+          tax_rate?: number
+          tenant_id: string
+          total?: number
+          unit?: string
+          unit_price?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          discount_pct?: number
+          id?: string
+          name?: string
+          position?: number
+          product_id?: string | null
+          quantity?: number
+          quotation_id?: string
+          sku?: string | null
+          subtotal?: number
+          tax_amount?: number
+          tax_rate?: number
+          tenant_id?: string
+          total?: number
+          unit?: string
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotation_items_quotation_id_fkey"
+            columns: ["quotation_id"]
+            isOneToOne: false
+            referencedRelation: "quotations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quotations: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          currency: string
+          customer_id: string
+          customer_snapshot: Json
+          decided_at: string | null
+          delivery_terms: string | null
+          discount_amount: number
+          discount_pct: number
+          folio: string
+          id: string
+          internal_notes: string | null
+          issue_date: string
+          notes: string | null
+          payment_terms: string | null
+          sent_at: string | null
+          status: Database["public"]["Enums"]["quotation_status"]
+          subtotal: number
+          tax_amount: number
+          tenant_id: string
+          total: number
+          updated_at: string
+          valid_until: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          customer_id: string
+          customer_snapshot?: Json
+          decided_at?: string | null
+          delivery_terms?: string | null
+          discount_amount?: number
+          discount_pct?: number
+          folio: string
+          id?: string
+          internal_notes?: string | null
+          issue_date?: string
+          notes?: string | null
+          payment_terms?: string | null
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["quotation_status"]
+          subtotal?: number
+          tax_amount?: number
+          tenant_id: string
+          total?: number
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          customer_id?: string
+          customer_snapshot?: Json
+          decided_at?: string | null
+          delivery_terms?: string | null
+          discount_amount?: number
+          discount_pct?: number
+          folio?: string
+          id?: string
+          internal_notes?: string | null
+          issue_date?: string
+          notes?: string | null
+          payment_terms?: string | null
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["quotation_status"]
+          subtotal?: number
+          tax_amount?: number
+          tenant_id?: string
+          total?: number
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Relationships: []
+      }
       tenants: {
         Row: {
           created_at: string
@@ -582,6 +728,10 @@ export type Database = {
     }
     Functions: {
       current_tenant_id: { Args: never; Returns: string }
+      generate_quotation_folio: {
+        Args: { _tenant_id: string }
+        Returns: string
+      }
       has_any_role: {
         Args: {
           _roles: Database["public"]["Enums"]["app_role"][]
@@ -602,6 +752,10 @@ export type Database = {
         Args: { _tenant_id: string; _user_id: string }
         Returns: boolean
       }
+      recalc_quotation_totals: {
+        Args: { _quotation_id: string }
+        Returns: undefined
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
     }
@@ -614,6 +768,13 @@ export type Database = {
         | "finance"
         | "viewer"
       product_type: "product" | "service"
+      quotation_status:
+        | "draft"
+        | "sent"
+        | "accepted"
+        | "rejected"
+        | "expired"
+        | "converted"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -750,6 +911,14 @@ export const Constants = {
         "viewer",
       ],
       product_type: ["product", "service"],
+      quotation_status: [
+        "draft",
+        "sent",
+        "accepted",
+        "rejected",
+        "expired",
+        "converted",
+      ],
     },
   },
 } as const

@@ -35,7 +35,7 @@ const mainNav: Array<{ to: string; label: string; icon: typeof LayoutDashboard; 
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/customers", label: "Clientes", icon: Users },
   { to: "/products", label: "Productos", icon: Package },
-  { to: "/quotations", label: "Cotizaciones", icon: FileText, soon: true },
+  { to: "/quotations", label: "Cotizaciones", icon: FileText },
 ];
 
 const orgNav = [

@@ -19,8 +19,10 @@ import { Route as AppSettingsRouteImport } from './routes/_app/settings'
 import { Route as AppProfileRouteImport } from './routes/_app/profile'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
 import { Route as AppAuditRouteImport } from './routes/_app/audit'
+import { Route as AppQuotationsIndexRouteImport } from './routes/_app/quotations.index'
 import { Route as AppProductsIndexRouteImport } from './routes/_app/products.index'
 import { Route as AppCustomersIndexRouteImport } from './routes/_app/customers.index'
+import { Route as AppQuotationsNewRouteImport } from './routes/_app/quotations.new'
 import { Route as AppProductsNewRouteImport } from './routes/_app/products.new'
 import { Route as AppProductsCategoriesRouteImport } from './routes/_app/products.categories'
 import { Route as AppProductsProductIdRouteImport } from './routes/_app/products.$productId'
@@ -76,6 +78,11 @@ const AppAuditRoute = AppAuditRouteImport.update({
   path: '/audit',
   getParentRoute: () => AppRoute,
 } as any)
+const AppQuotationsIndexRoute = AppQuotationsIndexRouteImport.update({
+  id: '/quotations/',
+  path: '/quotations/',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppProductsIndexRoute = AppProductsIndexRouteImport.update({
   id: '/products/',
   path: '/products/',
@@ -84,6 +91,11 @@ const AppProductsIndexRoute = AppProductsIndexRouteImport.update({
 const AppCustomersIndexRoute = AppCustomersIndexRouteImport.update({
   id: '/customers/',
   path: '/customers/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppQuotationsNewRoute = AppQuotationsNewRouteImport.update({
+  id: '/quotations/new',
+  path: '/quotations/new',
   getParentRoute: () => AppRoute,
 } as any)
 const AppProductsNewRoute = AppProductsNewRouteImport.update({
@@ -127,8 +139,10 @@ export interface FileRoutesByFullPath {
   '/products/$productId': typeof AppProductsProductIdRoute
   '/products/categories': typeof AppProductsCategoriesRoute
   '/products/new': typeof AppProductsNewRoute
+  '/quotations/new': typeof AppQuotationsNewRoute
   '/customers/': typeof AppCustomersIndexRoute
   '/products/': typeof AppProductsIndexRoute
+  '/quotations/': typeof AppQuotationsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -145,8 +159,10 @@ export interface FileRoutesByTo {
   '/products/$productId': typeof AppProductsProductIdRoute
   '/products/categories': typeof AppProductsCategoriesRoute
   '/products/new': typeof AppProductsNewRoute
+  '/quotations/new': typeof AppQuotationsNewRoute
   '/customers': typeof AppCustomersIndexRoute
   '/products': typeof AppProductsIndexRoute
+  '/quotations': typeof AppQuotationsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -165,8 +181,10 @@ export interface FileRoutesById {
   '/_app/products/$productId': typeof AppProductsProductIdRoute
   '/_app/products/categories': typeof AppProductsCategoriesRoute
   '/_app/products/new': typeof AppProductsNewRoute
+  '/_app/quotations/new': typeof AppQuotationsNewRoute
   '/_app/customers/': typeof AppCustomersIndexRoute
   '/_app/products/': typeof AppProductsIndexRoute
+  '/_app/quotations/': typeof AppQuotationsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -185,8 +203,10 @@ export interface FileRouteTypes {
     | '/products/$productId'
     | '/products/categories'
     | '/products/new'
+    | '/quotations/new'
     | '/customers/'
     | '/products/'
+    | '/quotations/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -203,8 +223,10 @@ export interface FileRouteTypes {
     | '/products/$productId'
     | '/products/categories'
     | '/products/new'
+    | '/quotations/new'
     | '/customers'
     | '/products'
+    | '/quotations'
   id:
     | '__root__'
     | '/'
@@ -222,8 +244,10 @@ export interface FileRouteTypes {
     | '/_app/products/$productId'
     | '/_app/products/categories'
     | '/_app/products/new'
+    | '/_app/quotations/new'
     | '/_app/customers/'
     | '/_app/products/'
+    | '/_app/quotations/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -307,6 +331,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAuditRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/quotations/': {
+      id: '/_app/quotations/'
+      path: '/quotations'
+      fullPath: '/quotations/'
+      preLoaderRoute: typeof AppQuotationsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/products/': {
       id: '/_app/products/'
       path: '/products'
@@ -319,6 +350,13 @@ declare module '@tanstack/react-router' {
       path: '/customers'
       fullPath: '/customers/'
       preLoaderRoute: typeof AppCustomersIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/quotations/new': {
+      id: '/_app/quotations/new'
+      path: '/quotations/new'
+      fullPath: '/quotations/new'
+      preLoaderRoute: typeof AppQuotationsNewRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/products/new': {
@@ -369,8 +407,10 @@ interface AppRouteChildren {
   AppProductsProductIdRoute: typeof AppProductsProductIdRoute
   AppProductsCategoriesRoute: typeof AppProductsCategoriesRoute
   AppProductsNewRoute: typeof AppProductsNewRoute
+  AppQuotationsNewRoute: typeof AppQuotationsNewRoute
   AppCustomersIndexRoute: typeof AppCustomersIndexRoute
   AppProductsIndexRoute: typeof AppProductsIndexRoute
+  AppQuotationsIndexRoute: typeof AppQuotationsIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -383,8 +423,10 @@ const AppRouteChildren: AppRouteChildren = {
   AppProductsProductIdRoute: AppProductsProductIdRoute,
   AppProductsCategoriesRoute: AppProductsCategoriesRoute,
   AppProductsNewRoute: AppProductsNewRoute,
+  AppQuotationsNewRoute: AppQuotationsNewRoute,
   AppCustomersIndexRoute: AppCustomersIndexRoute,
   AppProductsIndexRoute: AppProductsIndexRoute,
+  AppQuotationsIndexRoute: AppQuotationsIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
@@ -400,3 +442,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

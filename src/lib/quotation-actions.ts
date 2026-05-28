@@ -39,9 +39,9 @@ export async function snapshotQuotationVersion(
 ): Promise<number> {
   const { data, error } = await supabase.rpc("snapshot_quotation_version", {
     _quotation_id: quotationId,
-    _reason: reason ?? null,
+    _reason: reason ?? undefined,
   });
-  if (error) throw error;
+
   return data as number;
 }
 

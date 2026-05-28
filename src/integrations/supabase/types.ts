@@ -564,6 +564,78 @@ export type Database = {
           },
         ]
       }
+      quotation_public_tokens: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          last_viewed_at: string | null
+          quotation_id: string
+          revoked_at: string | null
+          tenant_id: string
+          token: string
+          view_count: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          last_viewed_at?: string | null
+          quotation_id: string
+          revoked_at?: string | null
+          tenant_id: string
+          token: string
+          view_count?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          last_viewed_at?: string | null
+          quotation_id?: string
+          revoked_at?: string | null
+          tenant_id?: string
+          token?: string
+          view_count?: number
+        }
+        Relationships: []
+      }
+      quotation_versions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          quotation_id: string
+          reason: string | null
+          snapshot: Json
+          tenant_id: string
+          version_number: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          quotation_id: string
+          reason?: string | null
+          snapshot?: Json
+          tenant_id: string
+          version_number: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          quotation_id?: string
+          reason?: string | null
+          snapshot?: Json
+          tenant_id?: string
+          version_number?: number
+        }
+        Relationships: []
+      }
       quotations: {
         Row: {
           created_at: string
@@ -728,6 +800,7 @@ export type Database = {
     }
     Functions: {
       current_tenant_id: { Args: never; Returns: string }
+      duplicate_quotation: { Args: { _quotation_id: string }; Returns: string }
       generate_quotation_folio: {
         Args: { _tenant_id: string }
         Returns: string
@@ -758,6 +831,10 @@ export type Database = {
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
+      snapshot_quotation_version: {
+        Args: { _quotation_id: string; _reason?: string }
+        Returns: number
+      }
     }
     Enums: {
       app_role:

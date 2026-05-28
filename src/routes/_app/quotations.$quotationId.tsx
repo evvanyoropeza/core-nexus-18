@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowLeft, Copy, FileDown, Link2, Loader2, Plus, Printer, Save, Send, Share2, Trash2, CheckCircle2, XCircle } from "lucide-react";
+import { ArrowLeft, Copy, FileDown, Loader2, Plus, Printer, Send, Share2, Trash2, CheckCircle2, XCircle } from "lucide-react";
 import { useAuth, logAudit } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -13,6 +13,7 @@ import {
   type QuotationPublicToken,
 } from "@/lib/quotation-actions";
 import { generateQuotationPdf } from "@/lib/quotations.functions";
+
 
 import {
   type Quotation,

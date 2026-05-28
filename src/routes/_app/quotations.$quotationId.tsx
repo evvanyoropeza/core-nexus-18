@@ -13,6 +13,10 @@ import {
   type QuotationPublicToken,
 } from "@/lib/quotation-actions";
 import { generateQuotationPdf } from "@/lib/quotations.functions";
+import {
+  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger,
+} from "@/components/ui/dialog";
+
 
 
 import {

@@ -184,10 +184,21 @@ function QuotationDetail() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Button variant="outline" size="sm" onClick={() => navigate({ to: "/quotations/$quotationId/print", params: { quotationId: q.id } })}>
-            <Printer className="mr-2 size-4" /> Imprimir / PDF
+            <Printer className="mr-2 size-4" /> Imprimir
           </Button>
+          <PdfButton quotationId={q.id} />
+          <ShareDialog tenantId={q.tenant_id} quotationId={q.id} />
+          {canEdit && (
+            <DuplicateButton
+              quotationId={q.id}
+              onDone={(newId) => navigate({ to: "/quotations/$quotationId", params: { quotationId: newId } })}
+            />
+          )}
           {canEdit && q.status === "draft" && (
-            <Button size="sm" onClick={() => changeStatus("sent")}>
+            <Button size="sm" onClick={async () => {
+              await snapshotQuotationVersion(q.id, "Enviada al cliente").catch(() => {});
+              await changeStatus("sent");
+            }}>
               <Send className="mr-2 size-4" /> Marcar enviada
             </Button>
           )}

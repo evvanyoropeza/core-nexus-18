@@ -22,12 +22,14 @@ import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
 import { Route as AppAuditRouteImport } from './routes/_app/audit'
 import { Route as AppQuotationsIndexRouteImport } from './routes/_app/quotations.index'
 import { Route as AppProductsIndexRouteImport } from './routes/_app/products.index'
+import { Route as AppOrdersIndexRouteImport } from './routes/_app/orders.index'
 import { Route as AppCustomersIndexRouteImport } from './routes/_app/customers.index'
 import { Route as AppQuotationsNewRouteImport } from './routes/_app/quotations.new'
 import { Route as AppQuotationsQuotationIdRouteImport } from './routes/_app/quotations.$quotationId'
 import { Route as AppProductsNewRouteImport } from './routes/_app/products.new'
 import { Route as AppProductsCategoriesRouteImport } from './routes/_app/products.categories'
 import { Route as AppProductsProductIdRouteImport } from './routes/_app/products.$productId'
+import { Route as AppOrdersOrderIdRouteImport } from './routes/_app/orders.$orderId'
 import { Route as AppCustomersNewRouteImport } from './routes/_app/customers.new'
 import { Route as AppCustomersCustomerIdRouteImport } from './routes/_app/customers.$customerId'
 import { Route as AppQuotationsQuotationIdPrintRouteImport } from './routes/_app/quotations.$quotationId.print'
@@ -96,6 +98,11 @@ const AppProductsIndexRoute = AppProductsIndexRouteImport.update({
   path: '/products/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppOrdersIndexRoute = AppOrdersIndexRouteImport.update({
+  id: '/orders/',
+  path: '/orders/',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppCustomersIndexRoute = AppCustomersIndexRouteImport.update({
   id: '/customers/',
   path: '/customers/',
@@ -125,6 +132,11 @@ const AppProductsCategoriesRoute = AppProductsCategoriesRouteImport.update({
 const AppProductsProductIdRoute = AppProductsProductIdRouteImport.update({
   id: '/products/$productId',
   path: '/products/$productId',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOrdersOrderIdRoute = AppOrdersOrderIdRouteImport.update({
+  id: '/orders/$orderId',
+  path: '/orders/$orderId',
   getParentRoute: () => AppRoute,
 } as any)
 const AppCustomersNewRoute = AppCustomersNewRouteImport.update({
@@ -157,12 +169,14 @@ export interface FileRoutesByFullPath {
   '/q/$token': typeof QTokenRoute
   '/customers/$customerId': typeof AppCustomersCustomerIdRoute
   '/customers/new': typeof AppCustomersNewRoute
+  '/orders/$orderId': typeof AppOrdersOrderIdRoute
   '/products/$productId': typeof AppProductsProductIdRoute
   '/products/categories': typeof AppProductsCategoriesRoute
   '/products/new': typeof AppProductsNewRoute
   '/quotations/$quotationId': typeof AppQuotationsQuotationIdRouteWithChildren
   '/quotations/new': typeof AppQuotationsNewRoute
   '/customers/': typeof AppCustomersIndexRoute
+  '/orders/': typeof AppOrdersIndexRoute
   '/products/': typeof AppProductsIndexRoute
   '/quotations/': typeof AppQuotationsIndexRoute
   '/quotations/$quotationId/print': typeof AppQuotationsQuotationIdPrintRoute
@@ -180,12 +194,14 @@ export interface FileRoutesByTo {
   '/q/$token': typeof QTokenRoute
   '/customers/$customerId': typeof AppCustomersCustomerIdRoute
   '/customers/new': typeof AppCustomersNewRoute
+  '/orders/$orderId': typeof AppOrdersOrderIdRoute
   '/products/$productId': typeof AppProductsProductIdRoute
   '/products/categories': typeof AppProductsCategoriesRoute
   '/products/new': typeof AppProductsNewRoute
   '/quotations/$quotationId': typeof AppQuotationsQuotationIdRouteWithChildren
   '/quotations/new': typeof AppQuotationsNewRoute
   '/customers': typeof AppCustomersIndexRoute
+  '/orders': typeof AppOrdersIndexRoute
   '/products': typeof AppProductsIndexRoute
   '/quotations': typeof AppQuotationsIndexRoute
   '/quotations/$quotationId/print': typeof AppQuotationsQuotationIdPrintRoute
@@ -205,12 +221,14 @@ export interface FileRoutesById {
   '/q/$token': typeof QTokenRoute
   '/_app/customers/$customerId': typeof AppCustomersCustomerIdRoute
   '/_app/customers/new': typeof AppCustomersNewRoute
+  '/_app/orders/$orderId': typeof AppOrdersOrderIdRoute
   '/_app/products/$productId': typeof AppProductsProductIdRoute
   '/_app/products/categories': typeof AppProductsCategoriesRoute
   '/_app/products/new': typeof AppProductsNewRoute
   '/_app/quotations/$quotationId': typeof AppQuotationsQuotationIdRouteWithChildren
   '/_app/quotations/new': typeof AppQuotationsNewRoute
   '/_app/customers/': typeof AppCustomersIndexRoute
+  '/_app/orders/': typeof AppOrdersIndexRoute
   '/_app/products/': typeof AppProductsIndexRoute
   '/_app/quotations/': typeof AppQuotationsIndexRoute
   '/_app/quotations/$quotationId/print': typeof AppQuotationsQuotationIdPrintRoute
@@ -230,12 +248,14 @@ export interface FileRouteTypes {
     | '/q/$token'
     | '/customers/$customerId'
     | '/customers/new'
+    | '/orders/$orderId'
     | '/products/$productId'
     | '/products/categories'
     | '/products/new'
     | '/quotations/$quotationId'
     | '/quotations/new'
     | '/customers/'
+    | '/orders/'
     | '/products/'
     | '/quotations/'
     | '/quotations/$quotationId/print'
@@ -253,12 +273,14 @@ export interface FileRouteTypes {
     | '/q/$token'
     | '/customers/$customerId'
     | '/customers/new'
+    | '/orders/$orderId'
     | '/products/$productId'
     | '/products/categories'
     | '/products/new'
     | '/quotations/$quotationId'
     | '/quotations/new'
     | '/customers'
+    | '/orders'
     | '/products'
     | '/quotations'
     | '/quotations/$quotationId/print'
@@ -277,12 +299,14 @@ export interface FileRouteTypes {
     | '/q/$token'
     | '/_app/customers/$customerId'
     | '/_app/customers/new'
+    | '/_app/orders/$orderId'
     | '/_app/products/$productId'
     | '/_app/products/categories'
     | '/_app/products/new'
     | '/_app/quotations/$quotationId'
     | '/_app/quotations/new'
     | '/_app/customers/'
+    | '/_app/orders/'
     | '/_app/products/'
     | '/_app/quotations/'
     | '/_app/quotations/$quotationId/print'
@@ -391,6 +415,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProductsIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/orders/': {
+      id: '/_app/orders/'
+      path: '/orders'
+      fullPath: '/orders/'
+      preLoaderRoute: typeof AppOrdersIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/customers/': {
       id: '/_app/customers/'
       path: '/customers'
@@ -431,6 +462,13 @@ declare module '@tanstack/react-router' {
       path: '/products/$productId'
       fullPath: '/products/$productId'
       preLoaderRoute: typeof AppProductsProductIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/orders/$orderId': {
+      id: '/_app/orders/$orderId'
+      path: '/orders/$orderId'
+      fullPath: '/orders/$orderId'
+      preLoaderRoute: typeof AppOrdersOrderIdRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/customers/new': {
@@ -478,12 +516,14 @@ interface AppRouteChildren {
   AppSettingsRoute: typeof AppSettingsRoute
   AppCustomersCustomerIdRoute: typeof AppCustomersCustomerIdRoute
   AppCustomersNewRoute: typeof AppCustomersNewRoute
+  AppOrdersOrderIdRoute: typeof AppOrdersOrderIdRoute
   AppProductsProductIdRoute: typeof AppProductsProductIdRoute
   AppProductsCategoriesRoute: typeof AppProductsCategoriesRoute
   AppProductsNewRoute: typeof AppProductsNewRoute
   AppQuotationsQuotationIdRoute: typeof AppQuotationsQuotationIdRouteWithChildren
   AppQuotationsNewRoute: typeof AppQuotationsNewRoute
   AppCustomersIndexRoute: typeof AppCustomersIndexRoute
+  AppOrdersIndexRoute: typeof AppOrdersIndexRoute
   AppProductsIndexRoute: typeof AppProductsIndexRoute
   AppQuotationsIndexRoute: typeof AppQuotationsIndexRoute
 }
@@ -495,12 +535,14 @@ const AppRouteChildren: AppRouteChildren = {
   AppSettingsRoute: AppSettingsRoute,
   AppCustomersCustomerIdRoute: AppCustomersCustomerIdRoute,
   AppCustomersNewRoute: AppCustomersNewRoute,
+  AppOrdersOrderIdRoute: AppOrdersOrderIdRoute,
   AppProductsProductIdRoute: AppProductsProductIdRoute,
   AppProductsCategoriesRoute: AppProductsCategoriesRoute,
   AppProductsNewRoute: AppProductsNewRoute,
   AppQuotationsQuotationIdRoute: AppQuotationsQuotationIdRouteWithChildren,
   AppQuotationsNewRoute: AppQuotationsNewRoute,
   AppCustomersIndexRoute: AppCustomersIndexRoute,
+  AppOrdersIndexRoute: AppOrdersIndexRoute,
   AppProductsIndexRoute: AppProductsIndexRoute,
   AppQuotationsIndexRoute: AppQuotationsIndexRoute,
 }

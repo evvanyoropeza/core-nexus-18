@@ -4,6 +4,7 @@ import {
   Users,
   Package,
   FileText,
+  ShoppingCart,
   History,
   Settings,
   Building2,
@@ -36,6 +37,7 @@ const mainNav: Array<{ to: string; label: string; icon: typeof LayoutDashboard; 
   { to: "/customers", label: "Clientes", icon: Users },
   { to: "/products", label: "Productos", icon: Package },
   { to: "/quotations", label: "Cotizaciones", icon: FileText },
+  { to: "/orders", label: "Órdenes", icon: ShoppingCart },
 ];
 
 const orgNav = [

@@ -603,3 +603,38 @@ function HistoryCard({ quotationId }: { quotationId: string }) {
     </Card>
   );
 }
+
+function ConvertToOrderButton({
+  quotationId,
+  onDone,
+}: {
+  quotationId: string;
+  onDone: (orderId: string) => void;
+}) {
+  const [loading, setLoading] = useState(false);
+  return (
+    <Button
+      size="sm"
+      disabled={loading}
+      onClick={async () => {
+        setLoading(true);
+        try {
+          const orderId = await convertQuotationToOrder(quotationId);
+          toast.success("Orden de venta creada");
+          onDone(orderId);
+        } catch (e) {
+          toast.error((e as Error).message);
+        } finally {
+          setLoading(false);
+        }
+      }}
+    >
+      {loading ? (
+        <Loader2 className="mr-2 size-4 animate-spin" />
+      ) : (
+        <ShoppingCart className="mr-2 size-4" />
+      )}
+      Convertir a orden
+    </Button>
+  );
+}

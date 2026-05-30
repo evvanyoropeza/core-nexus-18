@@ -370,6 +370,8 @@ function QuotationDetail() {
           <Totals q={q} />
         </CardContent>
       </Card>
+
+      <HistoryCard quotationId={q.id} />
     </div>
   );
 }

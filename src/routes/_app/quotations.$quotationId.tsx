@@ -3,7 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useEffect, useState } from "react";
 import {
   ArrowLeft, Copy, FileDown, History, Link2, Loader2, Plus, Printer,
-  Send, Share2, Trash2, CheckCircle2, XCircle,
+  Send, Share2, ShoppingCart, Trash2, CheckCircle2, XCircle,
 } from "lucide-react";
 import { useAuth, logAudit } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,6 +18,7 @@ import {
   type QuotationPublicToken,
   type QuotationVersion,
 } from "@/lib/quotation-actions";
+import { convertQuotationToOrder } from "@/lib/orders";
 import { generateQuotationPdf } from "@/lib/quotations.functions";
 import {
   Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger,
@@ -211,6 +212,12 @@ function QuotationDetail() {
                 <XCircle className="mr-2 size-4" /> Rechazada
               </Button>
             </>
+          )}
+          {canEdit && (q.status === "accepted" || q.status === "sent") && (
+            <ConvertToOrderButton
+              quotationId={q.id}
+              onDone={(orderId) => navigate({ to: "/orders/$orderId", params: { orderId } })}
+            />
           )}
           {hasRole("admin") && (
             <AlertDialog>

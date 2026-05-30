@@ -1,24 +1,27 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowLeft, Copy, FileDown, Loader2, Plus, Printer, Send, Share2, Trash2, CheckCircle2, XCircle } from "lucide-react";
+import {
+  ArrowLeft, Copy, FileDown, History, Link2, Loader2, Plus, Printer,
+  Send, Share2, Trash2, CheckCircle2, XCircle,
+} from "lucide-react";
 import { useAuth, logAudit } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import {
   createPublicToken,
   duplicateQuotation,
   listPublicTokens,
+  listQuotationVersions,
   publicQuotationUrl,
   revokePublicToken,
+  snapshotQuotationVersion,
   type QuotationPublicToken,
+  type QuotationVersion,
 } from "@/lib/quotation-actions";
 import { generateQuotationPdf } from "@/lib/quotations.functions";
 import {
   Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
-
-
-
 import {
   type Quotation,
   type QuotationItem,
@@ -181,10 +184,21 @@ function QuotationDetail() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Button variant="outline" size="sm" onClick={() => navigate({ to: "/quotations/$quotationId/print", params: { quotationId: q.id } })}>
-            <Printer className="mr-2 size-4" /> Imprimir / PDF
+            <Printer className="mr-2 size-4" /> Imprimir
           </Button>
+          <PdfButton quotationId={q.id} />
+          <ShareDialog tenantId={q.tenant_id} quotationId={q.id} />
+          {canEdit && (
+            <DuplicateButton
+              quotationId={q.id}
+              onDone={(newId) => navigate({ to: "/quotations/$quotationId", params: { quotationId: newId } })}
+            />
+          )}
           {canEdit && q.status === "draft" && (
-            <Button size="sm" onClick={() => changeStatus("sent")}>
+            <Button size="sm" onClick={async () => {
+              await snapshotQuotationVersion(q.id, "Enviada al cliente").catch(() => {});
+              await changeStatus("sent");
+            }}>
               <Send className="mr-2 size-4" /> Marcar enviada
             </Button>
           )}
@@ -356,6 +370,8 @@ function QuotationDetail() {
           <Totals q={q} />
         </CardContent>
       </Card>
+
+      <HistoryCard quotationId={q.id} />
     </div>
   );
 }
@@ -389,5 +405,194 @@ function Row({ label, value, strong }: { label: string; value: string; strong?: 
       <span className="text-muted-foreground">{label}</span>
       <span>{value}</span>
     </div>
+  );
+}
+
+function PdfButton({ quotationId }: { quotationId: string }) {
+  const gen = useServerFn(generateQuotationPdf);
+  const [loading, setLoading] = useState(false);
+  return (
+    <Button
+      variant="outline"
+      size="sm"
+      disabled={loading}
+      onClick={async () => {
+        setLoading(true);
+        try {
+          const res = await gen({ data: { quotationId } });
+          window.open(res.signedUrl, "_blank", "noopener");
+          toast.success("PDF generado");
+        } catch (e) {
+          toast.error((e as Error).message);
+        } finally {
+          setLoading(false);
+        }
+      }}
+    >
+      {loading ? <Loader2 className="mr-2 size-4 animate-spin" /> : <FileDown className="mr-2 size-4" />}
+      PDF
+    </Button>
+  );
+}
+
+function DuplicateButton({ quotationId, onDone }: { quotationId: string; onDone: (id: string) => void }) {
+  const [loading, setLoading] = useState(false);
+  return (
+    <Button
+      variant="outline"
+      size="sm"
+      disabled={loading}
+      onClick={async () => {
+        setLoading(true);
+        try {
+          const newId = await duplicateQuotation(quotationId);
+          toast.success("Cotización duplicada");
+          onDone(newId);
+        } catch (e) {
+          toast.error((e as Error).message);
+        } finally {
+          setLoading(false);
+        }
+      }}
+    >
+      {loading ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Copy className="mr-2 size-4" />}
+      Duplicar
+    </Button>
+  );
+}
+
+function ShareDialog({ tenantId, quotationId }: { tenantId: string; quotationId: string }) {
+  const [open, setOpen] = useState(false);
+  const [tokens, setTokens] = useState<QuotationPublicToken[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const reload = useCallback(async () => {
+    setTokens(await listPublicTokens(quotationId));
+  }, [quotationId]);
+
+  useEffect(() => { if (open) reload(); }, [open, reload]);
+
+  const create = async () => {
+    setLoading(true);
+    try {
+      await createPublicToken(tenantId, quotationId, 30);
+      toast.success("Enlace creado (válido 30 días)");
+      await reload();
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally { setLoading(false); }
+  };
+
+  const revoke = async (id: string) => {
+    await revokePublicToken(id);
+    toast.success("Enlace revocado");
+    await reload();
+  };
+
+  const active = tokens.filter((t) => !t.revoked_at);
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm"><Share2 className="mr-2 size-4" /> Compartir</Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Compartir cotización</DialogTitle>
+          <DialogDescription>
+            Genera un enlace público para que tu cliente vea y descargue la cotización sin necesidad de cuenta.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-3">
+          <Button onClick={create} disabled={loading} className="w-full">
+            {loading ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Link2 className="mr-2 size-4" />}
+            Crear nuevo enlace (30 días)
+          </Button>
+
+          <div className="space-y-2">
+            {active.length === 0 ? (
+              <p className="py-4 text-center text-sm text-muted-foreground">Sin enlaces activos.</p>
+            ) : active.map((t) => {
+              const url = publicQuotationUrl(t.token);
+              return (
+                <div key={t.id} className="space-y-1 rounded-md border p-3 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Input readOnly value={url} className="font-mono text-xs" />
+                    <Button size="sm" variant="outline" onClick={() => {
+                      navigator.clipboard.writeText(url);
+                      toast.success("Enlace copiado");
+                    }}>Copiar</Button>
+                    <Button size="sm" variant="ghost" onClick={() => revoke(t.id)}>Revocar</Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {t.view_count} vistas · expira {t.expires_at ? new Date(t.expires_at).toLocaleDateString("es-MX") : "—"}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function HistoryCard({ quotationId }: { quotationId: string }) {
+  const [versions, setVersions] = useState<QuotationVersion[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const reload = useCallback(async () => {
+    setLoading(true);
+    try {
+      setVersions(await listQuotationVersions(quotationId));
+    } finally { setLoading(false); }
+  }, [quotationId]);
+
+  useEffect(() => { reload(); }, [reload]);
+
+  return (
+    <Card>
+      <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <CardTitle className="flex items-center gap-2"><History className="size-4" /> Historial de versiones</CardTitle>
+        <Button variant="outline" size="sm" onClick={async () => {
+          try {
+            const n = await snapshotQuotationVersion(quotationId, "Snapshot manual");
+            toast.success(`Versión v${n} guardada`);
+            await reload();
+          } catch (e) { toast.error((e as Error).message); }
+        }}>Guardar versión</Button>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <p className="py-4 text-center text-sm text-muted-foreground">Cargando…</p>
+        ) : versions.length === 0 ? (
+          <p className="py-4 text-center text-sm text-muted-foreground">
+            Sin versiones guardadas. Se crean automáticamente al marcar como enviada.
+          </p>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-16">Ver.</TableHead>
+                <TableHead>Motivo</TableHead>
+                <TableHead className="text-right">Fecha</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {versions.map((v) => (
+                <TableRow key={v.id}>
+                  <TableCell className="font-mono">v{v.version_number}</TableCell>
+                  <TableCell className="text-sm">{v.reason ?? "—"}</TableCell>
+                  <TableCell className="text-right text-sm text-muted-foreground">
+                    {new Date(v.created_at).toLocaleString("es-MX")}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </CardContent>
+    </Card>
   );
 }

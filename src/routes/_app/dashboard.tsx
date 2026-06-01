@@ -4,16 +4,48 @@ import { FileText, Users, Package, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
+import { OnboardingTour } from "@/components/help/OnboardingTour";
+import { HelpHint } from "@/components/help/HelpHint";
 
 export const Route = createFileRoute("/_app/dashboard")({
   component: DashboardPage,
 });
 
-const kpis = [
-  { label: "Cotizaciones del mes", value: "—", icon: FileText, hint: "Pronto" },
-  { label: "Revenue mensual", value: "—", icon: TrendingUp, hint: "Pronto" },
-  { label: "Clientes activos", value: "—", icon: Users, hint: "Pronto" },
-  { label: "Productos en catálogo", value: "—", icon: Package, hint: "Pronto" },
+const kpis: Array<{
+  label: string;
+  value: string;
+  icon: typeof FileText;
+  hint: string;
+  help: string;
+}> = [
+  {
+    label: "Cotizaciones del mes",
+    value: "—",
+    icon: FileText,
+    hint: "Pronto",
+    help: "Número total de cotizaciones creadas en el mes en curso, sin importar su estado.",
+  },
+  {
+    label: "Revenue mensual",
+    value: "—",
+    icon: TrendingUp,
+    hint: "Pronto",
+    help: "Suma de cotizaciones aceptadas y órdenes confirmadas del mes, en moneda base.",
+  },
+  {
+    label: "Clientes activos",
+    value: "—",
+    icon: Users,
+    hint: "Pronto",
+    help: "Clientes con al menos una cotización u orden en los últimos 90 días.",
+  },
+  {
+    label: "Productos en catálogo",
+    value: "—",
+    icon: Package,
+    hint: "Pronto",
+    help: "Total de productos activos disponibles para cotizar.",
+  },
 ];
 
 function DashboardPage() {
@@ -35,6 +67,7 @@ function DashboardPage() {
 
   return (
     <div className="space-y-6">
+      <OnboardingTour />
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">
           Bienvenido, {profile?.full_name?.split(" ")[0] ?? "👋"}
@@ -48,7 +81,10 @@ function DashboardPage() {
         {kpis.map((k) => (
           <Card key={k.label} className="shadow-elev-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">{k.label}</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
+                {k.label}
+                <HelpHint>{k.help}</HelpHint>
+              </CardTitle>
               <k.icon className="size-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>

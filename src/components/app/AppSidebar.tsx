@@ -9,6 +9,7 @@ import {
   Settings,
   Building2,
   ChevronsUpDown,
+  BookOpen,
 } from "lucide-react";
 import {
   Sidebar,
@@ -41,6 +42,7 @@ const mainNav: Array<{ to: string; label: string; icon: typeof LayoutDashboard; 
 ];
 
 const orgNav = [
+  { to: "/docs", label: "Ayuda", icon: BookOpen },
   { to: "/audit", label: "Actividad", icon: History },
   { to: "/settings", label: "Configuración", icon: Settings },
 ];

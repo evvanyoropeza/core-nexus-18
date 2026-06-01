@@ -18,11 +18,13 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as QTokenRouteImport } from './routes/q.$token'
 import { Route as AppSettingsRouteImport } from './routes/_app/settings'
 import { Route as AppProfileRouteImport } from './routes/_app/profile'
+import { Route as AppDocsRouteImport } from './routes/_app/docs'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
 import { Route as AppAuditRouteImport } from './routes/_app/audit'
 import { Route as AppQuotationsIndexRouteImport } from './routes/_app/quotations.index'
 import { Route as AppProductsIndexRouteImport } from './routes/_app/products.index'
 import { Route as AppOrdersIndexRouteImport } from './routes/_app/orders.index'
+import { Route as AppDocsIndexRouteImport } from './routes/_app/docs.index'
 import { Route as AppCustomersIndexRouteImport } from './routes/_app/customers.index'
 import { Route as AppQuotationsNewRouteImport } from './routes/_app/quotations.new'
 import { Route as AppQuotationsQuotationIdRouteImport } from './routes/_app/quotations.$quotationId'
@@ -30,6 +32,11 @@ import { Route as AppProductsNewRouteImport } from './routes/_app/products.new'
 import { Route as AppProductsCategoriesRouteImport } from './routes/_app/products.categories'
 import { Route as AppProductsProductIdRouteImport } from './routes/_app/products.$productId'
 import { Route as AppOrdersOrderIdRouteImport } from './routes/_app/orders.$orderId'
+import { Route as AppDocsQuotationsRouteImport } from './routes/_app/docs.quotations'
+import { Route as AppDocsProductsRouteImport } from './routes/_app/docs.products'
+import { Route as AppDocsOrdersRouteImport } from './routes/_app/docs.orders'
+import { Route as AppDocsFaqRouteImport } from './routes/_app/docs.faq'
+import { Route as AppDocsCustomersRouteImport } from './routes/_app/docs.customers'
 import { Route as AppCustomersNewRouteImport } from './routes/_app/customers.new'
 import { Route as AppCustomersCustomerIdRouteImport } from './routes/_app/customers.$customerId'
 import { Route as AppQuotationsQuotationIdPrintRouteImport } from './routes/_app/quotations.$quotationId.print'
@@ -78,6 +85,11 @@ const AppProfileRoute = AppProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AppRoute,
 } as any)
+const AppDocsRoute = AppDocsRouteImport.update({
+  id: '/docs',
+  path: '/docs',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -102,6 +114,11 @@ const AppOrdersIndexRoute = AppOrdersIndexRouteImport.update({
   id: '/orders/',
   path: '/orders/',
   getParentRoute: () => AppRoute,
+} as any)
+const AppDocsIndexRoute = AppDocsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppDocsRoute,
 } as any)
 const AppCustomersIndexRoute = AppCustomersIndexRouteImport.update({
   id: '/customers/',
@@ -139,6 +156,31 @@ const AppOrdersOrderIdRoute = AppOrdersOrderIdRouteImport.update({
   path: '/orders/$orderId',
   getParentRoute: () => AppRoute,
 } as any)
+const AppDocsQuotationsRoute = AppDocsQuotationsRouteImport.update({
+  id: '/quotations',
+  path: '/quotations',
+  getParentRoute: () => AppDocsRoute,
+} as any)
+const AppDocsProductsRoute = AppDocsProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
+  getParentRoute: () => AppDocsRoute,
+} as any)
+const AppDocsOrdersRoute = AppDocsOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => AppDocsRoute,
+} as any)
+const AppDocsFaqRoute = AppDocsFaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => AppDocsRoute,
+} as any)
+const AppDocsCustomersRoute = AppDocsCustomersRouteImport.update({
+  id: '/customers',
+  path: '/customers',
+  getParentRoute: () => AppDocsRoute,
+} as any)
 const AppCustomersNewRoute = AppCustomersNewRouteImport.update({
   id: '/customers/new',
   path: '/customers/new',
@@ -164,11 +206,17 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/audit': typeof AppAuditRoute
   '/dashboard': typeof AppDashboardRoute
+  '/docs': typeof AppDocsRouteWithChildren
   '/profile': typeof AppProfileRoute
   '/settings': typeof AppSettingsRoute
   '/q/$token': typeof QTokenRoute
   '/customers/$customerId': typeof AppCustomersCustomerIdRoute
   '/customers/new': typeof AppCustomersNewRoute
+  '/docs/customers': typeof AppDocsCustomersRoute
+  '/docs/faq': typeof AppDocsFaqRoute
+  '/docs/orders': typeof AppDocsOrdersRoute
+  '/docs/products': typeof AppDocsProductsRoute
+  '/docs/quotations': typeof AppDocsQuotationsRoute
   '/orders/$orderId': typeof AppOrdersOrderIdRoute
   '/products/$productId': typeof AppProductsProductIdRoute
   '/products/categories': typeof AppProductsCategoriesRoute
@@ -176,6 +224,7 @@ export interface FileRoutesByFullPath {
   '/quotations/$quotationId': typeof AppQuotationsQuotationIdRouteWithChildren
   '/quotations/new': typeof AppQuotationsNewRoute
   '/customers/': typeof AppCustomersIndexRoute
+  '/docs/': typeof AppDocsIndexRoute
   '/orders/': typeof AppOrdersIndexRoute
   '/products/': typeof AppProductsIndexRoute
   '/quotations/': typeof AppQuotationsIndexRoute
@@ -194,6 +243,11 @@ export interface FileRoutesByTo {
   '/q/$token': typeof QTokenRoute
   '/customers/$customerId': typeof AppCustomersCustomerIdRoute
   '/customers/new': typeof AppCustomersNewRoute
+  '/docs/customers': typeof AppDocsCustomersRoute
+  '/docs/faq': typeof AppDocsFaqRoute
+  '/docs/orders': typeof AppDocsOrdersRoute
+  '/docs/products': typeof AppDocsProductsRoute
+  '/docs/quotations': typeof AppDocsQuotationsRoute
   '/orders/$orderId': typeof AppOrdersOrderIdRoute
   '/products/$productId': typeof AppProductsProductIdRoute
   '/products/categories': typeof AppProductsCategoriesRoute
@@ -201,6 +255,7 @@ export interface FileRoutesByTo {
   '/quotations/$quotationId': typeof AppQuotationsQuotationIdRouteWithChildren
   '/quotations/new': typeof AppQuotationsNewRoute
   '/customers': typeof AppCustomersIndexRoute
+  '/docs': typeof AppDocsIndexRoute
   '/orders': typeof AppOrdersIndexRoute
   '/products': typeof AppProductsIndexRoute
   '/quotations': typeof AppQuotationsIndexRoute
@@ -216,11 +271,17 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_app/audit': typeof AppAuditRoute
   '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/docs': typeof AppDocsRouteWithChildren
   '/_app/profile': typeof AppProfileRoute
   '/_app/settings': typeof AppSettingsRoute
   '/q/$token': typeof QTokenRoute
   '/_app/customers/$customerId': typeof AppCustomersCustomerIdRoute
   '/_app/customers/new': typeof AppCustomersNewRoute
+  '/_app/docs/customers': typeof AppDocsCustomersRoute
+  '/_app/docs/faq': typeof AppDocsFaqRoute
+  '/_app/docs/orders': typeof AppDocsOrdersRoute
+  '/_app/docs/products': typeof AppDocsProductsRoute
+  '/_app/docs/quotations': typeof AppDocsQuotationsRoute
   '/_app/orders/$orderId': typeof AppOrdersOrderIdRoute
   '/_app/products/$productId': typeof AppProductsProductIdRoute
   '/_app/products/categories': typeof AppProductsCategoriesRoute
@@ -228,6 +289,7 @@ export interface FileRoutesById {
   '/_app/quotations/$quotationId': typeof AppQuotationsQuotationIdRouteWithChildren
   '/_app/quotations/new': typeof AppQuotationsNewRoute
   '/_app/customers/': typeof AppCustomersIndexRoute
+  '/_app/docs/': typeof AppDocsIndexRoute
   '/_app/orders/': typeof AppOrdersIndexRoute
   '/_app/products/': typeof AppProductsIndexRoute
   '/_app/quotations/': typeof AppQuotationsIndexRoute
@@ -243,11 +305,17 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/audit'
     | '/dashboard'
+    | '/docs'
     | '/profile'
     | '/settings'
     | '/q/$token'
     | '/customers/$customerId'
     | '/customers/new'
+    | '/docs/customers'
+    | '/docs/faq'
+    | '/docs/orders'
+    | '/docs/products'
+    | '/docs/quotations'
     | '/orders/$orderId'
     | '/products/$productId'
     | '/products/categories'
@@ -255,6 +323,7 @@ export interface FileRouteTypes {
     | '/quotations/$quotationId'
     | '/quotations/new'
     | '/customers/'
+    | '/docs/'
     | '/orders/'
     | '/products/'
     | '/quotations/'
@@ -273,6 +342,11 @@ export interface FileRouteTypes {
     | '/q/$token'
     | '/customers/$customerId'
     | '/customers/new'
+    | '/docs/customers'
+    | '/docs/faq'
+    | '/docs/orders'
+    | '/docs/products'
+    | '/docs/quotations'
     | '/orders/$orderId'
     | '/products/$productId'
     | '/products/categories'
@@ -280,6 +354,7 @@ export interface FileRouteTypes {
     | '/quotations/$quotationId'
     | '/quotations/new'
     | '/customers'
+    | '/docs'
     | '/orders'
     | '/products'
     | '/quotations'
@@ -294,11 +369,17 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_app/audit'
     | '/_app/dashboard'
+    | '/_app/docs'
     | '/_app/profile'
     | '/_app/settings'
     | '/q/$token'
     | '/_app/customers/$customerId'
     | '/_app/customers/new'
+    | '/_app/docs/customers'
+    | '/_app/docs/faq'
+    | '/_app/docs/orders'
+    | '/_app/docs/products'
+    | '/_app/docs/quotations'
     | '/_app/orders/$orderId'
     | '/_app/products/$productId'
     | '/_app/products/categories'
@@ -306,6 +387,7 @@ export interface FileRouteTypes {
     | '/_app/quotations/$quotationId'
     | '/_app/quotations/new'
     | '/_app/customers/'
+    | '/_app/docs/'
     | '/_app/orders/'
     | '/_app/products/'
     | '/_app/quotations/'
@@ -387,6 +469,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProfileRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/docs': {
+      id: '/_app/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof AppDocsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/dashboard': {
       id: '/_app/dashboard'
       path: '/dashboard'
@@ -421,6 +510,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/orders/'
       preLoaderRoute: typeof AppOrdersIndexRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/_app/docs/': {
+      id: '/_app/docs/'
+      path: '/'
+      fullPath: '/docs/'
+      preLoaderRoute: typeof AppDocsIndexRouteImport
+      parentRoute: typeof AppDocsRoute
     }
     '/_app/customers/': {
       id: '/_app/customers/'
@@ -471,6 +567,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppOrdersOrderIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/docs/quotations': {
+      id: '/_app/docs/quotations'
+      path: '/quotations'
+      fullPath: '/docs/quotations'
+      preLoaderRoute: typeof AppDocsQuotationsRouteImport
+      parentRoute: typeof AppDocsRoute
+    }
+    '/_app/docs/products': {
+      id: '/_app/docs/products'
+      path: '/products'
+      fullPath: '/docs/products'
+      preLoaderRoute: typeof AppDocsProductsRouteImport
+      parentRoute: typeof AppDocsRoute
+    }
+    '/_app/docs/orders': {
+      id: '/_app/docs/orders'
+      path: '/orders'
+      fullPath: '/docs/orders'
+      preLoaderRoute: typeof AppDocsOrdersRouteImport
+      parentRoute: typeof AppDocsRoute
+    }
+    '/_app/docs/faq': {
+      id: '/_app/docs/faq'
+      path: '/faq'
+      fullPath: '/docs/faq'
+      preLoaderRoute: typeof AppDocsFaqRouteImport
+      parentRoute: typeof AppDocsRoute
+    }
+    '/_app/docs/customers': {
+      id: '/_app/docs/customers'
+      path: '/customers'
+      fullPath: '/docs/customers'
+      preLoaderRoute: typeof AppDocsCustomersRouteImport
+      parentRoute: typeof AppDocsRoute
+    }
     '/_app/customers/new': {
       id: '/_app/customers/new'
       path: '/customers/new'
@@ -495,6 +626,27 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AppDocsRouteChildren {
+  AppDocsCustomersRoute: typeof AppDocsCustomersRoute
+  AppDocsFaqRoute: typeof AppDocsFaqRoute
+  AppDocsOrdersRoute: typeof AppDocsOrdersRoute
+  AppDocsProductsRoute: typeof AppDocsProductsRoute
+  AppDocsQuotationsRoute: typeof AppDocsQuotationsRoute
+  AppDocsIndexRoute: typeof AppDocsIndexRoute
+}
+
+const AppDocsRouteChildren: AppDocsRouteChildren = {
+  AppDocsCustomersRoute: AppDocsCustomersRoute,
+  AppDocsFaqRoute: AppDocsFaqRoute,
+  AppDocsOrdersRoute: AppDocsOrdersRoute,
+  AppDocsProductsRoute: AppDocsProductsRoute,
+  AppDocsQuotationsRoute: AppDocsQuotationsRoute,
+  AppDocsIndexRoute: AppDocsIndexRoute,
+}
+
+const AppDocsRouteWithChildren =
+  AppDocsRoute._addFileChildren(AppDocsRouteChildren)
+
 interface AppQuotationsQuotationIdRouteChildren {
   AppQuotationsQuotationIdPrintRoute: typeof AppQuotationsQuotationIdPrintRoute
 }
@@ -512,6 +664,7 @@ const AppQuotationsQuotationIdRouteWithChildren =
 interface AppRouteChildren {
   AppAuditRoute: typeof AppAuditRoute
   AppDashboardRoute: typeof AppDashboardRoute
+  AppDocsRoute: typeof AppDocsRouteWithChildren
   AppProfileRoute: typeof AppProfileRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppCustomersCustomerIdRoute: typeof AppCustomersCustomerIdRoute
@@ -531,6 +684,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppAuditRoute: AppAuditRoute,
   AppDashboardRoute: AppDashboardRoute,
+  AppDocsRoute: AppDocsRouteWithChildren,
   AppProfileRoute: AppProfileRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppCustomersCustomerIdRoute: AppCustomersCustomerIdRoute,
@@ -561,13 +715,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

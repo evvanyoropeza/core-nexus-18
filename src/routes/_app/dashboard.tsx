@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { FileText, Users, Package, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/lib/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, formatMoney } from "@/lib/quotations";
+import { getDashboardKpis } from "@/lib/dashboard.functions";
 import { OnboardingTour } from "@/components/help/OnboardingTour";
 import { HelpHint } from "@/components/help/HelpHint";
 

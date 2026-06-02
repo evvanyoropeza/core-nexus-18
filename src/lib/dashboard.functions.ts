@@ -71,7 +71,7 @@ export const getDashboardKpis = createServerFn({ method: "POST" })
     if (e6) throw e6;
 
     return {
-      quotationsMonth: qCount?.length ?? 0,
+      quotationsMonth: qCount ?? 0,
       revenueMonth: revenue,
       activeCustomers: activeCustomerIds.size,
       activeProducts: pCount ?? 0,

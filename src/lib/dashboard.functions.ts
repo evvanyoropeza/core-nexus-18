@@ -45,24 +45,35 @@ export const getDashboardKpis = createServerFn({ method: "POST" })
       + (oRev ?? []).reduce((s, r) => s + Number(r.total ?? 0), 0);
 
     // Clientes activos (con cotización u orden en últimos 90 días)
-    const { data: activeCustomers, error: e4 } = await supabase.rpc("count_active_customers", {
-      _tenant_id: data.tenantId,
-      _since: iso90,
-    });
+    const { data: qCustomers, error: e4 } = await supabase
+      .from("quotations")
+      .select("customer_id")
+      .eq("tenant_id", data.tenantId)
+      .gte("created_at", iso90);
     if (e4) throw e4;
+    const { data: oCustomers, error: e5 } = await supabase
+      .from("sales_orders")
+      .select("customer_id")
+      .eq("tenant_id", data.tenantId)
+      .gte("created_at", iso90);
+    if (e5) throw e5;
+    const activeCustomerIds = new Set([
+      ...(qCustomers ?? []).map((c) => c.customer_id),
+      ...(oCustomers ?? []).map((c) => c.customer_id),
+    ]);
 
     // Productos en catálogo
-    const { data: pCount, error: e5 } = await supabase
+    const { count: pCount, error: e6 } = await supabase
       .from("products")
       .select("id", { count: "exact", head: true })
       .eq("tenant_id", data.tenantId)
       .eq("is_active", true);
-    if (e5) throw e5;
+    if (e6) throw e6;
 
     return {
       quotationsMonth: qCount?.length ?? 0,
       revenueMonth: revenue,
-      activeCustomers: activeCustomers ?? 0,
-      activeProducts: pCount?.length ?? 0,
+      activeCustomers: activeCustomerIds.size,
+      activeProducts: pCount ?? 0,
     };
   });

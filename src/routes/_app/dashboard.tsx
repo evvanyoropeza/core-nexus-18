@@ -47,6 +47,15 @@ const kpiDefs = [
 
 function DashboardPage() {
   const { currentTenant, profile } = useAuth();
+  const fetchKpis = useServerFn(getDashboardKpis);
+
+  const { data: kpis } = useQuery({
+    queryKey: ["dashboard-kpis", currentTenant?.tenant_id],
+    enabled: !!currentTenant,
+    queryFn: async () => {
+      return fetchKpis({ data: { tenantId: currentTenant!.tenant_id } });
+    },
+  });
 
   const { data: recent } = useQuery({
     queryKey: ["recent-audit", currentTenant?.tenant_id],
@@ -75,7 +84,7 @@ function DashboardPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {kpis.map((k) => (
+        {kpiDefs.map((k) => (
           <Card key={k.label} className="shadow-elev-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
@@ -85,8 +94,9 @@ function DashboardPage() {
               <k.icon className="size-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-semibold">{k.value}</div>
-              <p className="text-xs text-muted-foreground">{k.hint}</p>
+              <div className="text-2xl font-semibold">
+                {kpis ? k.format(kpis[k.key]) : "—"}
+              </div>
             </CardContent>
           </Card>
         ))}

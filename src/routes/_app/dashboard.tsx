@@ -1,9 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { FileText, Users, Package, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
+import { formatMoney } from "@/lib/quotations";
+import { getDashboardKpis } from "@/lib/dashboard.functions";
 import { OnboardingTour } from "@/components/help/OnboardingTour";
 import { HelpHint } from "@/components/help/HelpHint";
 
@@ -11,45 +14,48 @@ export const Route = createFileRoute("/_app/dashboard")({
   component: DashboardPage,
 });
 
-const kpis: Array<{
-  label: string;
-  value: string;
-  icon: typeof FileText;
-  hint: string;
-  help: string;
-}> = [
+const kpiDefs = [
   {
     label: "Cotizaciones del mes",
-    value: "—",
     icon: FileText,
-    hint: "Pronto",
     help: "Número total de cotizaciones creadas en el mes en curso, sin importar su estado.",
+    format: (v: number) => v.toLocaleString("es-MX"),
+    key: "quotationsMonth" as const,
   },
   {
     label: "Revenue mensual",
-    value: "—",
     icon: TrendingUp,
-    hint: "Pronto",
     help: "Suma de cotizaciones aceptadas y órdenes confirmadas del mes, en moneda base.",
+    format: (v: number) => formatMoney(v),
+    key: "revenueMonth" as const,
   },
   {
     label: "Clientes activos",
-    value: "—",
     icon: Users,
-    hint: "Pronto",
     help: "Clientes con al menos una cotización u orden en los últimos 90 días.",
+    format: (v: number) => v.toLocaleString("es-MX"),
+    key: "activeCustomers" as const,
   },
   {
     label: "Productos en catálogo",
-    value: "—",
     icon: Package,
-    hint: "Pronto",
     help: "Total de productos activos disponibles para cotizar.",
+    format: (v: number) => v.toLocaleString("es-MX"),
+    key: "activeProducts" as const,
   },
 ];
 
 function DashboardPage() {
   const { currentTenant, profile } = useAuth();
+  const fetchKpis = useServerFn(getDashboardKpis);
+
+  const { data: kpis } = useQuery({
+    queryKey: ["dashboard-kpis", currentTenant?.tenant_id],
+    enabled: !!currentTenant,
+    queryFn: async () => {
+      return fetchKpis({ data: { tenantId: currentTenant!.tenant_id } });
+    },
+  });
 
   const { data: recent } = useQuery({
     queryKey: ["recent-audit", currentTenant?.tenant_id],
@@ -78,7 +84,7 @@ function DashboardPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {kpis.map((k) => (
+        {kpiDefs.map((k) => (
           <Card key={k.label} className="shadow-elev-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
@@ -88,8 +94,9 @@ function DashboardPage() {
               <k.icon className="size-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-semibold">{k.value}</div>
-              <p className="text-xs text-muted-foreground">{k.hint}</p>
+              <div className="text-2xl font-semibold">
+                {kpis ? k.format(kpis[k.key]) : "—"}
+              </div>
             </CardContent>
           </Card>
         ))}

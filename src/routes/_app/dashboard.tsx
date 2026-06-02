@@ -14,40 +14,34 @@ export const Route = createFileRoute("/_app/dashboard")({
   component: DashboardPage,
 });
 
-const kpis: Array<{
-  label: string;
-  value: string;
-  icon: typeof FileText;
-  hint: string;
-  help: string;
-}> = [
+const kpiDefs = [
   {
     label: "Cotizaciones del mes",
-    value: "—",
     icon: FileText,
-    hint: "Pronto",
     help: "Número total de cotizaciones creadas en el mes en curso, sin importar su estado.",
+    format: (v: number) => v.toLocaleString("es-MX"),
+    key: "quotationsMonth" as const,
   },
   {
     label: "Revenue mensual",
-    value: "—",
     icon: TrendingUp,
-    hint: "Pronto",
     help: "Suma de cotizaciones aceptadas y órdenes confirmadas del mes, en moneda base.",
+    format: (v: number) => formatMoney(v),
+    key: "revenueMonth" as const,
   },
   {
     label: "Clientes activos",
-    value: "—",
     icon: Users,
-    hint: "Pronto",
     help: "Clientes con al menos una cotización u orden en los últimos 90 días.",
+    format: (v: number) => v.toLocaleString("es-MX"),
+    key: "activeCustomers" as const,
   },
   {
     label: "Productos en catálogo",
-    value: "—",
     icon: Package,
-    hint: "Pronto",
     help: "Total de productos activos disponibles para cotizar.",
+    format: (v: number) => v.toLocaleString("es-MX"),
+    key: "activeProducts" as const,
   },
 ];
 

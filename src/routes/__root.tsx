@@ -77,9 +77,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Plataforma SaaS industrial multi-empresa: clientes, productos, cotizaciones y analítica con seguridad enterprise.",
       },
-      { property: "og:title", content: "Industria ERP" },
-      { property: "og:description", content: "ERP/CRM industrial multi-tenant enterprise" },
+      { property: "og:title", content: "Industria ERP — Gestión empresarial multi-tenant" },
+      { property: "og:description", content: "Este es un apoyo para empresas que llevan la gestión de sus productos clientes e inventarios de forma local en un excel, dando un mejor seguimiento a estas area" },
       { property: "og:type", content: "website" },
+      { name: "twitter:title", content: "Industria ERP — Gestión empresarial multi-tenant" },
+      { name: "description", content: "Este es un apoyo para empresas que llevan la gestión de sus productos clientes e inventarios de forma local en un excel, dando un mejor seguimiento a estas area" },
+      { name: "twitter:description", content: "Este es un apoyo para empresas que llevan la gestión de sus productos clientes e inventarios de forma local en un excel, dando un mejor seguimiento a estas area" },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9f2cb7cd-62e7-40b8-9d6c-fa0e9c6fc960/id-preview-890927f5--5d88dfab-2dc0-4476-bcf4-91944d86c2a9.lovable.app-1780360641021.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9f2cb7cd-62e7-40b8-9d6c-fa0e9c6fc960/id-preview-890927f5--5d88dfab-2dc0-4476-bcf4-91944d86c2a9.lovable.app-1780360641021.png" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

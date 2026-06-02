@@ -17,7 +17,7 @@ export const getDashboardKpis = createServerFn({ method: "POST" })
     const iso90 = ninetyDaysAgo.toISOString();
 
     // Cotizaciones del mes
-    const { data: qCount, error: e1 } = await supabase
+    const { count: qCount, error: e1 } = await supabase
       .from("quotations")
       .select("id", { count: "exact", head: true })
       .eq("tenant_id", data.tenantId)

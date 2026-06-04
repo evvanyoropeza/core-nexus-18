@@ -42,9 +42,15 @@ export const setQuotationStatus = createServerFn({ method: "POST" })
   .inputValidator((input: { quotationId: string; status: "draft" | "sent" | "accepted" | "rejected" | "expired" }) => input)
   .handler(async ({ data, context }) => {
     const { supabase } = context;
-    const patch: Record<string, unknown> = { status: data.status, updated_at: new Date().toISOString() };
-    if (data.status === "sent") patch.sent_at = new Date().toISOString();
-    if (data.status === "accepted" || data.status === "rejected") patch.decided_at = new Date().toISOString();
+    const now = new Date().toISOString();
+    const patch: {
+      status: typeof data.status;
+      updated_at: string;
+      sent_at?: string;
+      decided_at?: string;
+    } = { status: data.status, updated_at: now };
+    if (data.status === "sent") patch.sent_at = now;
+    if (data.status === "accepted" || data.status === "rejected") patch.decided_at = now;
     const { error } = await supabase.from("quotations").update(patch).eq("id", data.quotationId);
     if (error) throw error;
     return { ok: true };

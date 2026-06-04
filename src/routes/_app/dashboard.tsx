@@ -17,7 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
-import { formatMoney, STATUS_LABEL } from "@/lib/quotations";
+import { formatMoney } from "@/lib/quotations";
 import { getDashboardKpis } from "@/lib/dashboard.functions";
 import { getAnalytics } from "@/lib/analytics.functions";
 import { OnboardingTour } from "@/components/help/OnboardingTour";

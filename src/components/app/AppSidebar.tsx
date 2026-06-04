@@ -10,6 +10,8 @@ import {
   Building2,
   ChevronsUpDown,
   BookOpen,
+  Kanban,
+  BarChart3,
 } from "lucide-react";
 import {
   Sidebar,
@@ -38,7 +40,9 @@ const mainNav: Array<{ to: string; label: string; icon: typeof LayoutDashboard; 
   { to: "/customers", label: "Clientes", icon: Users },
   { to: "/products", label: "Productos", icon: Package },
   { to: "/quotations", label: "Cotizaciones", icon: FileText },
+  { to: "/pipeline", label: "Pipeline", icon: Kanban },
   { to: "/orders", label: "Órdenes", icon: ShoppingCart },
+  { to: "/analytics", label: "Analíticas", icon: BarChart3 },
 ];
 
 const orgNav = [

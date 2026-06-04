@@ -18,9 +18,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as QTokenRouteImport } from './routes/q.$token'
 import { Route as AppSettingsRouteImport } from './routes/_app/settings'
 import { Route as AppProfileRouteImport } from './routes/_app/profile'
+import { Route as AppPipelineRouteImport } from './routes/_app/pipeline'
 import { Route as AppDocsRouteImport } from './routes/_app/docs'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
 import { Route as AppAuditRouteImport } from './routes/_app/audit'
+import { Route as AppAnalyticsRouteImport } from './routes/_app/analytics'
 import { Route as AppQuotationsIndexRouteImport } from './routes/_app/quotations.index'
 import { Route as AppProductsIndexRouteImport } from './routes/_app/products.index'
 import { Route as AppOrdersIndexRouteImport } from './routes/_app/orders.index'
@@ -85,6 +87,11 @@ const AppProfileRoute = AppProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPipelineRoute = AppPipelineRouteImport.update({
+  id: '/pipeline',
+  path: '/pipeline',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppDocsRoute = AppDocsRouteImport.update({
   id: '/docs',
   path: '/docs',
@@ -98,6 +105,11 @@ const AppDashboardRoute = AppDashboardRouteImport.update({
 const AppAuditRoute = AppAuditRouteImport.update({
   id: '/audit',
   path: '/audit',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
   getParentRoute: () => AppRoute,
 } as any)
 const AppQuotationsIndexRoute = AppQuotationsIndexRouteImport.update({
@@ -204,9 +216,11 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/analytics': typeof AppAnalyticsRoute
   '/audit': typeof AppAuditRoute
   '/dashboard': typeof AppDashboardRoute
   '/docs': typeof AppDocsRouteWithChildren
+  '/pipeline': typeof AppPipelineRoute
   '/profile': typeof AppProfileRoute
   '/settings': typeof AppSettingsRoute
   '/q/$token': typeof QTokenRoute
@@ -236,8 +250,10 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/analytics': typeof AppAnalyticsRoute
   '/audit': typeof AppAuditRoute
   '/dashboard': typeof AppDashboardRoute
+  '/pipeline': typeof AppPipelineRoute
   '/profile': typeof AppProfileRoute
   '/settings': typeof AppSettingsRoute
   '/q/$token': typeof QTokenRoute
@@ -269,9 +285,11 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/_app/analytics': typeof AppAnalyticsRoute
   '/_app/audit': typeof AppAuditRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/docs': typeof AppDocsRouteWithChildren
+  '/_app/pipeline': typeof AppPipelineRoute
   '/_app/profile': typeof AppProfileRoute
   '/_app/settings': typeof AppSettingsRoute
   '/q/$token': typeof QTokenRoute
@@ -303,9 +321,11 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/reset-password'
+    | '/analytics'
     | '/audit'
     | '/dashboard'
     | '/docs'
+    | '/pipeline'
     | '/profile'
     | '/settings'
     | '/q/$token'
@@ -335,8 +355,10 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/reset-password'
+    | '/analytics'
     | '/audit'
     | '/dashboard'
+    | '/pipeline'
     | '/profile'
     | '/settings'
     | '/q/$token'
@@ -367,9 +389,11 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/reset-password'
+    | '/_app/analytics'
     | '/_app/audit'
     | '/_app/dashboard'
     | '/_app/docs'
+    | '/_app/pipeline'
     | '/_app/profile'
     | '/_app/settings'
     | '/q/$token'
@@ -469,6 +493,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProfileRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/pipeline': {
+      id: '/_app/pipeline'
+      path: '/pipeline'
+      fullPath: '/pipeline'
+      preLoaderRoute: typeof AppPipelineRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/docs': {
       id: '/_app/docs'
       path: '/docs'
@@ -488,6 +519,13 @@ declare module '@tanstack/react-router' {
       path: '/audit'
       fullPath: '/audit'
       preLoaderRoute: typeof AppAuditRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/analytics': {
+      id: '/_app/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AppAnalyticsRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/quotations/': {
@@ -662,9 +700,11 @@ const AppQuotationsQuotationIdRouteWithChildren =
   )
 
 interface AppRouteChildren {
+  AppAnalyticsRoute: typeof AppAnalyticsRoute
   AppAuditRoute: typeof AppAuditRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppDocsRoute: typeof AppDocsRouteWithChildren
+  AppPipelineRoute: typeof AppPipelineRoute
   AppProfileRoute: typeof AppProfileRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppCustomersCustomerIdRoute: typeof AppCustomersCustomerIdRoute
@@ -682,9 +722,11 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAnalyticsRoute: AppAnalyticsRoute,
   AppAuditRoute: AppAuditRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppDocsRoute: AppDocsRouteWithChildren,
+  AppPipelineRoute: AppPipelineRoute,
   AppProfileRoute: AppProfileRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppCustomersCustomerIdRoute: AppCustomersCustomerIdRoute,
@@ -715,13 +757,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

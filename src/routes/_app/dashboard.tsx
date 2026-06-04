@@ -133,15 +133,87 @@ function DashboardPage() {
 
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Pipeline comercial</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Ingresos · últimos 30 días</CardTitle>
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/analytics">
+                Ver analíticas <ArrowRight className="ml-1 size-3" />
+              </Link>
+            </Button>
           </CardHeader>
-          <CardContent>
-            <div className="flex h-64 items-center justify-center rounded-lg border border-dashed border-border text-sm text-muted-foreground">
-              Disponible en Fase 5 — Dashboards analíticos
-            </div>
+          <CardContent className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={analytics?.salesByDay ?? []}>
+                <defs>
+                  <linearGradient id="rev" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
+                    <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                <XAxis
+                  dataKey="date"
+                  tickFormatter={(v) => new Date(v).toLocaleDateString("es-MX", { day: "numeric", month: "short" })}
+                  fontSize={11}
+                />
+                <YAxis fontSize={11} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
+                <Tooltip
+                  formatter={(v: number) => formatMoney(v)}
+                  labelFormatter={(v) => new Date(v).toLocaleDateString("es-MX")}
+                />
+                <Area type="monotone" dataKey="revenue" stroke="hsl(var(--primary))" fill="url(#rev)" strokeWidth={2} />
+              </AreaChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Embudo</CardTitle>
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/pipeline">
+                Pipeline <ArrowRight className="ml-1 size-3" />
+              </Link>
+            </Button>
+          </CardHeader>
+          <CardContent className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart layout="vertical" data={funnelData}>
+                <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                <XAxis type="number" fontSize={11} />
+                <YAxis type="category" dataKey="stage" fontSize={11} width={80} />
+                <Tooltip />
+                <Bar dataKey="value" fill="hsl(var(--primary))" radius={[0, 6, 6, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+            <p className="mt-2 text-xs text-muted-foreground text-center">
+              Conversión: <span className="font-semibold">{(analytics?.funnel.conversionRate ?? 0).toFixed(1)}%</span>
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle>Top clientes (30d)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {(analytics?.topCustomers ?? []).length === 0 ? (
+              <p className="text-sm text-muted-foreground">Sin datos aún.</p>
+            ) : (
+              <ul className="divide-y">
+                {analytics!.topCustomers.map((c) => (
+                  <li key={c.customer_id} className="flex items-center justify-between py-2 text-sm">
+                    <span className="truncate">{c.name}</span>
+                    <span className="font-semibold">{formatMoney(c.total)}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+
 
         <Card>
           <CardHeader>

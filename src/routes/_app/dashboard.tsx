@@ -70,6 +70,13 @@ function DashboardPage() {
     },
   });
 
+  const fetchAnalytics = useServerFn(getAnalytics);
+  const { data: analytics } = useQuery({
+    queryKey: ["dashboard-analytics", currentTenant?.tenant_id],
+    enabled: !!currentTenant,
+    queryFn: () => fetchAnalytics({ data: { tenantId: currentTenant!.tenant_id, days: 30 } }),
+  });
+
   const { data: recent } = useQuery({
     queryKey: ["recent-audit", currentTenant?.tenant_id],
     enabled: !!currentTenant,
@@ -83,6 +90,15 @@ function DashboardPage() {
       return data ?? [];
     },
   });
+
+  const funnelData = analytics
+    ? [
+        { stage: "Creadas", value: analytics.funnel.draft },
+        { stage: "Enviadas", value: analytics.funnel.sent },
+        { stage: "Aceptadas", value: analytics.funnel.accepted },
+        { stage: "Convertidas", value: analytics.funnel.converted },
+      ]
+    : [];
 
   return (
     <div className="space-y-6">

@@ -141,7 +141,10 @@ export function ProductForm({ initial, categories, submitting, onSubmit }: Props
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="stock_current">Stock actual</Label>
-              <Input id="stock_current" type="number" step="0.01" min="0" value={form.stock_current} onChange={(e) => set("stock_current", Number(e.target.value))} />
+              <Input id="stock_current" type="number" value={form.stock_current} disabled readOnly />
+              <p className="text-xs text-muted-foreground mt-1">
+                El stock se modifica registrando movimientos en la pestaña <strong>Inventario</strong>.
+              </p>
             </div>
             <div>
               <Label htmlFor="stock_min">Stock mínimo (alerta)</Label>

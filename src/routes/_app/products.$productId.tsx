@@ -147,6 +147,7 @@ function ProductDetailPage() {
         <TabsList>
           <TabsTrigger value="info">Información</TabsTrigger>
           <TabsTrigger value="pricing">Precios por volumen</TabsTrigger>
+          {!isService && <TabsTrigger value="inventory">Inventario</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="info" className="mt-4">

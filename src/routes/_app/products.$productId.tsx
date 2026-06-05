@@ -67,8 +67,31 @@ function ProductDetailPage() {
     queryFn: () => fetchPriceTiers(productId),
   });
 
+  const isService = product?.type === "service";
+
+  const { data: movements = [] } = useQuery({
+    queryKey: ["stock_movements", productId],
+    enabled: !!productId && !isService,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("stock_movements")
+        .select("*")
+        .eq("product_id", productId)
+        .order("created_at", { ascending: false })
+        .limit(200);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
   const [tierQty, setTierQty] = useState("");
   const [tierPrice, setTierPrice] = useState("");
+  const [movType, setMovType] = useState<MovementType>("entry");
+  const [movQty, setMovQty] = useState("");
+  const [movReason, setMovReason] = useState("");
+  const [movReference, setMovReference] = useState("");
+  const [movCost, setMovCost] = useState("");
+  const [savingMov, setSavingMov] = useState(false);
 
   if (isLoading) return <div className="text-sm text-muted-foreground">Cargando…</div>;
   if (!product) return <div className="text-sm text-muted-foreground">Producto no encontrado.</div>;

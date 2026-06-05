@@ -37,7 +37,7 @@ export const Route = createFileRoute("/_app/products/$productId")({
 
 function ProductDetailPage() {
   const { productId } = Route.useParams();
-  const { currentTenant, hasRole } = useAuth();
+  const { currentTenant, hasRole, user } = useAuth();
   const tenantId = currentTenant?.tenant_id;
   const navigate = useNavigate();
   const qc = useQueryClient();

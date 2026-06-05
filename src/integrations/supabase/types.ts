@@ -883,6 +883,63 @@ export type Database = {
           },
         ]
       }
+      stock_movements: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          movement_type: Database["public"]["Enums"]["stock_movement_type"]
+          product_id: string
+          quantity: number
+          reason: string | null
+          reference: string | null
+          resulting_stock: number
+          tenant_id: string
+          unit_cost: number | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          movement_type: Database["public"]["Enums"]["stock_movement_type"]
+          product_id: string
+          quantity: number
+          reason?: string | null
+          reference?: string | null
+          resulting_stock: number
+          tenant_id: string
+          unit_cost?: number | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          movement_type?: Database["public"]["Enums"]["stock_movement_type"]
+          product_id?: string
+          quantity?: number
+          reason?: string | null
+          reference?: string | null
+          resulting_stock?: number
+          tenant_id?: string
+          unit_cost?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_movements_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_movements_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tenants: {
         Row: {
           created_at: string
@@ -1033,6 +1090,7 @@ export type Database = {
         | "in_progress"
         | "fulfilled"
         | "cancelled"
+      stock_movement_type: "entry" | "exit" | "adjustment"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1184,6 +1242,7 @@ export const Constants = {
         "fulfilled",
         "cancelled",
       ],
+      stock_movement_type: ["entry", "exit", "adjustment"],
     },
   },
 } as const

@@ -1,13 +1,18 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { ArrowLeft, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, ArrowDownCircle, ArrowUpCircle, Settings2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
@@ -24,13 +29,15 @@ import {
   marginPct,
 } from "@/lib/products";
 
+type MovementType = "entry" | "exit" | "adjustment";
+
 export const Route = createFileRoute("/_app/products/$productId")({
   component: ProductDetailPage,
 });
 
 function ProductDetailPage() {
   const { productId } = Route.useParams();
-  const { currentTenant, hasRole } = useAuth();
+  const { currentTenant, hasRole, user } = useAuth();
   const tenantId = currentTenant?.tenant_id;
   const navigate = useNavigate();
   const qc = useQueryClient();
@@ -60,8 +67,31 @@ function ProductDetailPage() {
     queryFn: () => fetchPriceTiers(productId),
   });
 
+  const isService = product?.type === "service";
+
+  const { data: movements = [] } = useQuery({
+    queryKey: ["stock_movements", productId],
+    enabled: !!productId && !isService,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("stock_movements")
+        .select("*")
+        .eq("product_id", productId)
+        .order("created_at", { ascending: false })
+        .limit(200);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
   const [tierQty, setTierQty] = useState("");
   const [tierPrice, setTierPrice] = useState("");
+  const [movType, setMovType] = useState<MovementType>("entry");
+  const [movQty, setMovQty] = useState("");
+  const [movReason, setMovReason] = useState("");
+  const [movReference, setMovReference] = useState("");
+  const [movCost, setMovCost] = useState("");
+  const [savingMov, setSavingMov] = useState(false);
 
   if (isLoading) return <div className="text-sm text-muted-foreground">Cargando…</div>;
   if (!product) return <div className="text-sm text-muted-foreground">Producto no encontrado.</div>;
@@ -117,6 +147,7 @@ function ProductDetailPage() {
         <TabsList>
           <TabsTrigger value="info">Información</TabsTrigger>
           <TabsTrigger value="pricing">Precios por volumen</TabsTrigger>
+          {!isService && <TabsTrigger value="inventory">Inventario</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="info" className="mt-4">
@@ -209,6 +240,138 @@ function ProductDetailPage() {
             </Table>
           </Card>
         </TabsContent>
+
+        {!isService && (
+          <TabsContent value="inventory" className="mt-4 space-y-4">
+            {canEdit && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Registrar movimiento</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div>
+                      <Label>Tipo</Label>
+                      <Select value={movType} onValueChange={(v) => setMovType(v as MovementType)}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="entry">Entrada (+)</SelectItem>
+                          <SelectItem value="exit">Salida (−)</SelectItem>
+                          <SelectItem value="adjustment">Ajuste (=)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>{movType === "adjustment" ? "Nuevo stock" : "Cantidad"}</Label>
+                      <Input type="number" step="0.0001" min="0" value={movQty} onChange={(e) => setMovQty(e.target.value)} />
+                    </div>
+                    <div>
+                      <Label>Costo unitario (opcional)</Label>
+                      <Input type="number" step="0.0001" min="0" value={movCost} onChange={(e) => setMovCost(e.target.value)} />
+                    </div>
+                    <div className="md:col-span-2">
+                      <Label>Motivo</Label>
+                      <Input value={movReason} onChange={(e) => setMovReason(e.target.value)} placeholder="Compra a proveedor, venta directa, merma…" maxLength={200} />
+                    </div>
+                    <div>
+                      <Label>Referencia (opcional)</Label>
+                      <Input value={movReference} onChange={(e) => setMovReference(e.target.value)} placeholder="Folio, OC, factura…" maxLength={80} />
+                    </div>
+                  </div>
+                  <div className="flex justify-end">
+                    <Button
+                      type="button"
+                      disabled={savingMov}
+                      onClick={async () => {
+                        const qty = Number(movQty);
+                        if (!Number.isFinite(qty) || qty < 0) { toast.error("Cantidad inválida"); return; }
+                        if (movType !== "adjustment" && qty <= 0) { toast.error("Cantidad debe ser mayor a 0"); return; }
+                        if (!user || !tenantId) return;
+                        setSavingMov(true);
+                        try {
+                          const { error } = await supabase.from("stock_movements").insert({
+                            tenant_id: tenantId,
+                            product_id: product.id,
+                            movement_type: movType,
+                            quantity: qty,
+                            resulting_stock: 0,
+                            reason: movReason.trim() || null,
+                            reference: movReference.trim() || null,
+                            unit_cost: movCost ? Number(movCost) : null,
+                            created_by: user.id,
+                          });
+                          if (error) throw error;
+                          await logAudit({
+                            tenantId, action: `stock.${movType}`, entityType: "product",
+                            entityId: product.id, metadata: { sku: product.sku, quantity: qty, reason: movReason },
+                          });
+                          toast.success("Movimiento registrado");
+                          setMovQty(""); setMovReason(""); setMovReference(""); setMovCost("");
+                          qc.invalidateQueries({ queryKey: ["stock_movements", productId] });
+                          qc.invalidateQueries({ queryKey: ["product", productId] });
+                          qc.invalidateQueries({ queryKey: ["products", tenantId] });
+                        } catch (e) {
+                          toast.error(e instanceof Error ? e.message : "Error al registrar");
+                        } finally { setSavingMov(false); }
+                      }}
+                    >
+                      {savingMov ? "Registrando…" : "Registrar"}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Historial de movimientos</CardTitle>
+              </CardHeader>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Fecha</TableHead>
+                    <TableHead>Tipo</TableHead>
+                    <TableHead className="text-right">Cantidad</TableHead>
+                    <TableHead className="text-right">Stock resultante</TableHead>
+                    <TableHead>Motivo</TableHead>
+                    <TableHead>Referencia</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {movements.length === 0 ? (
+                    <TableRow><TableCell colSpan={6} className="text-center py-6 text-muted-foreground text-sm">Sin movimientos registrados.</TableCell></TableRow>
+                  ) : movements.map((m) => {
+                    const isEntry = m.movement_type === "entry";
+                    const isExit = m.movement_type === "exit";
+                    const Icon = isEntry ? ArrowDownCircle : isExit ? ArrowUpCircle : Settings2;
+                    const label = isEntry ? "Entrada" : isExit ? "Salida" : "Ajuste";
+                    const sign = isEntry ? "+" : isExit ? "−" : "=";
+                    return (
+                      <TableRow key={m.id}>
+                        <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+                          {new Date(m.created_at).toLocaleString()}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="secondary" className="gap-1">
+                            <Icon className="size-3" /> {label}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">
+                          {sign}{Number(m.quantity).toLocaleString()}
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums font-medium">
+                          {Number(m.resulting_stock).toLocaleString()}
+                        </TableCell>
+                        <TableCell className="text-sm">{m.reason ?? "—"}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">{m.reference ?? "—"}</TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </Card>
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );

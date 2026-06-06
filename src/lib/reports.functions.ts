@@ -192,7 +192,7 @@ export const getInventoryReport = createServerFn({ method: "POST" })
       .lte("created_at", toIso)
       .order("created_at", { ascending: false })
       .limit(1000);
-    if (data.type) q = q.eq("movement_type", data.type);
+    if (data.type) q = q.eq("movement_type", data.type as "entry" | "exit" | "adjustment");
     const { data: rows, error } = await q;
     if (error) throw error;
 
@@ -237,7 +237,7 @@ export const getQuotationsReport = createServerFn({ method: "POST" })
       .lte("created_at", toIso)
       .order("issue_date", { ascending: false })
       .limit(1000);
-    if (data.status) q = q.eq("status", data.status);
+    if (data.status) q = q.eq("status", data.status as "draft" | "sent" | "accepted" | "rejected" | "expired" | "converted");
     const { data: rows, error } = await q;
     if (error) throw error;
 
@@ -280,7 +280,7 @@ export const getSalesReport = createServerFn({ method: "POST" })
       .lte("created_at", toIso)
       .order("issue_date", { ascending: false })
       .limit(1000);
-    if (data.status) q = q.eq("status", data.status);
+    if (data.status) q = q.eq("status", data.status as "draft" | "confirmed" | "in_progress" | "fulfilled" | "cancelled");
     const { data: rows, error } = await q;
     if (error) throw error;
 

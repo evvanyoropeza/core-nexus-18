@@ -17,17 +17,24 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as QTokenRouteImport } from './routes/q.$token'
 import { Route as AppSettingsRouteImport } from './routes/_app/settings'
+import { Route as AppReportsRouteImport } from './routes/_app/reports'
 import { Route as AppProfileRouteImport } from './routes/_app/profile'
 import { Route as AppPipelineRouteImport } from './routes/_app/pipeline'
 import { Route as AppDocsRouteImport } from './routes/_app/docs'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
 import { Route as AppAuditRouteImport } from './routes/_app/audit'
 import { Route as AppAnalyticsRouteImport } from './routes/_app/analytics'
+import { Route as AppReportsIndexRouteImport } from './routes/_app/reports.index'
 import { Route as AppQuotationsIndexRouteImport } from './routes/_app/quotations.index'
 import { Route as AppProductsIndexRouteImport } from './routes/_app/products.index'
 import { Route as AppOrdersIndexRouteImport } from './routes/_app/orders.index'
 import { Route as AppDocsIndexRouteImport } from './routes/_app/docs.index'
 import { Route as AppCustomersIndexRouteImport } from './routes/_app/customers.index'
+import { Route as AppReportsSalesRouteImport } from './routes/_app/reports.sales'
+import { Route as AppReportsQuotationsRouteImport } from './routes/_app/reports.quotations'
+import { Route as AppReportsProductsRouteImport } from './routes/_app/reports.products'
+import { Route as AppReportsInventoryRouteImport } from './routes/_app/reports.inventory'
+import { Route as AppReportsCustomersRouteImport } from './routes/_app/reports.customers'
 import { Route as AppQuotationsNewRouteImport } from './routes/_app/quotations.new'
 import { Route as AppQuotationsQuotationIdRouteImport } from './routes/_app/quotations.$quotationId'
 import { Route as AppProductsNewRouteImport } from './routes/_app/products.new'
@@ -82,6 +89,11 @@ const AppSettingsRoute = AppSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AppRoute,
 } as any)
+const AppReportsRoute = AppReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppProfileRoute = AppProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -112,6 +124,11 @@ const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => AppRoute,
 } as any)
+const AppReportsIndexRoute = AppReportsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppReportsRoute,
+} as any)
 const AppQuotationsIndexRoute = AppQuotationsIndexRouteImport.update({
   id: '/quotations/',
   path: '/quotations/',
@@ -136,6 +153,31 @@ const AppCustomersIndexRoute = AppCustomersIndexRouteImport.update({
   id: '/customers/',
   path: '/customers/',
   getParentRoute: () => AppRoute,
+} as any)
+const AppReportsSalesRoute = AppReportsSalesRouteImport.update({
+  id: '/sales',
+  path: '/sales',
+  getParentRoute: () => AppReportsRoute,
+} as any)
+const AppReportsQuotationsRoute = AppReportsQuotationsRouteImport.update({
+  id: '/quotations',
+  path: '/quotations',
+  getParentRoute: () => AppReportsRoute,
+} as any)
+const AppReportsProductsRoute = AppReportsProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
+  getParentRoute: () => AppReportsRoute,
+} as any)
+const AppReportsInventoryRoute = AppReportsInventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
+  getParentRoute: () => AppReportsRoute,
+} as any)
+const AppReportsCustomersRoute = AppReportsCustomersRouteImport.update({
+  id: '/customers',
+  path: '/customers',
+  getParentRoute: () => AppReportsRoute,
 } as any)
 const AppQuotationsNewRoute = AppQuotationsNewRouteImport.update({
   id: '/quotations/new',
@@ -222,6 +264,7 @@ export interface FileRoutesByFullPath {
   '/docs': typeof AppDocsRouteWithChildren
   '/pipeline': typeof AppPipelineRoute
   '/profile': typeof AppProfileRoute
+  '/reports': typeof AppReportsRouteWithChildren
   '/settings': typeof AppSettingsRoute
   '/q/$token': typeof QTokenRoute
   '/customers/$customerId': typeof AppCustomersCustomerIdRoute
@@ -237,11 +280,17 @@ export interface FileRoutesByFullPath {
   '/products/new': typeof AppProductsNewRoute
   '/quotations/$quotationId': typeof AppQuotationsQuotationIdRouteWithChildren
   '/quotations/new': typeof AppQuotationsNewRoute
+  '/reports/customers': typeof AppReportsCustomersRoute
+  '/reports/inventory': typeof AppReportsInventoryRoute
+  '/reports/products': typeof AppReportsProductsRoute
+  '/reports/quotations': typeof AppReportsQuotationsRoute
+  '/reports/sales': typeof AppReportsSalesRoute
   '/customers/': typeof AppCustomersIndexRoute
   '/docs/': typeof AppDocsIndexRoute
   '/orders/': typeof AppOrdersIndexRoute
   '/products/': typeof AppProductsIndexRoute
   '/quotations/': typeof AppQuotationsIndexRoute
+  '/reports/': typeof AppReportsIndexRoute
   '/quotations/$quotationId/print': typeof AppQuotationsQuotationIdPrintRoute
 }
 export interface FileRoutesByTo {
@@ -270,11 +319,17 @@ export interface FileRoutesByTo {
   '/products/new': typeof AppProductsNewRoute
   '/quotations/$quotationId': typeof AppQuotationsQuotationIdRouteWithChildren
   '/quotations/new': typeof AppQuotationsNewRoute
+  '/reports/customers': typeof AppReportsCustomersRoute
+  '/reports/inventory': typeof AppReportsInventoryRoute
+  '/reports/products': typeof AppReportsProductsRoute
+  '/reports/quotations': typeof AppReportsQuotationsRoute
+  '/reports/sales': typeof AppReportsSalesRoute
   '/customers': typeof AppCustomersIndexRoute
   '/docs': typeof AppDocsIndexRoute
   '/orders': typeof AppOrdersIndexRoute
   '/products': typeof AppProductsIndexRoute
   '/quotations': typeof AppQuotationsIndexRoute
+  '/reports': typeof AppReportsIndexRoute
   '/quotations/$quotationId/print': typeof AppQuotationsQuotationIdPrintRoute
 }
 export interface FileRoutesById {
@@ -291,6 +346,7 @@ export interface FileRoutesById {
   '/_app/docs': typeof AppDocsRouteWithChildren
   '/_app/pipeline': typeof AppPipelineRoute
   '/_app/profile': typeof AppProfileRoute
+  '/_app/reports': typeof AppReportsRouteWithChildren
   '/_app/settings': typeof AppSettingsRoute
   '/q/$token': typeof QTokenRoute
   '/_app/customers/$customerId': typeof AppCustomersCustomerIdRoute
@@ -306,11 +362,17 @@ export interface FileRoutesById {
   '/_app/products/new': typeof AppProductsNewRoute
   '/_app/quotations/$quotationId': typeof AppQuotationsQuotationIdRouteWithChildren
   '/_app/quotations/new': typeof AppQuotationsNewRoute
+  '/_app/reports/customers': typeof AppReportsCustomersRoute
+  '/_app/reports/inventory': typeof AppReportsInventoryRoute
+  '/_app/reports/products': typeof AppReportsProductsRoute
+  '/_app/reports/quotations': typeof AppReportsQuotationsRoute
+  '/_app/reports/sales': typeof AppReportsSalesRoute
   '/_app/customers/': typeof AppCustomersIndexRoute
   '/_app/docs/': typeof AppDocsIndexRoute
   '/_app/orders/': typeof AppOrdersIndexRoute
   '/_app/products/': typeof AppProductsIndexRoute
   '/_app/quotations/': typeof AppQuotationsIndexRoute
+  '/_app/reports/': typeof AppReportsIndexRoute
   '/_app/quotations/$quotationId/print': typeof AppQuotationsQuotationIdPrintRoute
 }
 export interface FileRouteTypes {
@@ -327,6 +389,7 @@ export interface FileRouteTypes {
     | '/docs'
     | '/pipeline'
     | '/profile'
+    | '/reports'
     | '/settings'
     | '/q/$token'
     | '/customers/$customerId'
@@ -342,11 +405,17 @@ export interface FileRouteTypes {
     | '/products/new'
     | '/quotations/$quotationId'
     | '/quotations/new'
+    | '/reports/customers'
+    | '/reports/inventory'
+    | '/reports/products'
+    | '/reports/quotations'
+    | '/reports/sales'
     | '/customers/'
     | '/docs/'
     | '/orders/'
     | '/products/'
     | '/quotations/'
+    | '/reports/'
     | '/quotations/$quotationId/print'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -375,11 +444,17 @@ export interface FileRouteTypes {
     | '/products/new'
     | '/quotations/$quotationId'
     | '/quotations/new'
+    | '/reports/customers'
+    | '/reports/inventory'
+    | '/reports/products'
+    | '/reports/quotations'
+    | '/reports/sales'
     | '/customers'
     | '/docs'
     | '/orders'
     | '/products'
     | '/quotations'
+    | '/reports'
     | '/quotations/$quotationId/print'
   id:
     | '__root__'
@@ -395,6 +470,7 @@ export interface FileRouteTypes {
     | '/_app/docs'
     | '/_app/pipeline'
     | '/_app/profile'
+    | '/_app/reports'
     | '/_app/settings'
     | '/q/$token'
     | '/_app/customers/$customerId'
@@ -410,11 +486,17 @@ export interface FileRouteTypes {
     | '/_app/products/new'
     | '/_app/quotations/$quotationId'
     | '/_app/quotations/new'
+    | '/_app/reports/customers'
+    | '/_app/reports/inventory'
+    | '/_app/reports/products'
+    | '/_app/reports/quotations'
+    | '/_app/reports/sales'
     | '/_app/customers/'
     | '/_app/docs/'
     | '/_app/orders/'
     | '/_app/products/'
     | '/_app/quotations/'
+    | '/_app/reports/'
     | '/_app/quotations/$quotationId/print'
   fileRoutesById: FileRoutesById
 }
@@ -486,6 +568,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSettingsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/reports': {
+      id: '/_app/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof AppReportsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/profile': {
       id: '/_app/profile'
       path: '/profile'
@@ -528,6 +617,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAnalyticsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/reports/': {
+      id: '/_app/reports/'
+      path: '/'
+      fullPath: '/reports/'
+      preLoaderRoute: typeof AppReportsIndexRouteImport
+      parentRoute: typeof AppReportsRoute
+    }
     '/_app/quotations/': {
       id: '/_app/quotations/'
       path: '/quotations'
@@ -562,6 +658,41 @@ declare module '@tanstack/react-router' {
       fullPath: '/customers/'
       preLoaderRoute: typeof AppCustomersIndexRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/_app/reports/sales': {
+      id: '/_app/reports/sales'
+      path: '/sales'
+      fullPath: '/reports/sales'
+      preLoaderRoute: typeof AppReportsSalesRouteImport
+      parentRoute: typeof AppReportsRoute
+    }
+    '/_app/reports/quotations': {
+      id: '/_app/reports/quotations'
+      path: '/quotations'
+      fullPath: '/reports/quotations'
+      preLoaderRoute: typeof AppReportsQuotationsRouteImport
+      parentRoute: typeof AppReportsRoute
+    }
+    '/_app/reports/products': {
+      id: '/_app/reports/products'
+      path: '/products'
+      fullPath: '/reports/products'
+      preLoaderRoute: typeof AppReportsProductsRouteImport
+      parentRoute: typeof AppReportsRoute
+    }
+    '/_app/reports/inventory': {
+      id: '/_app/reports/inventory'
+      path: '/inventory'
+      fullPath: '/reports/inventory'
+      preLoaderRoute: typeof AppReportsInventoryRouteImport
+      parentRoute: typeof AppReportsRoute
+    }
+    '/_app/reports/customers': {
+      id: '/_app/reports/customers'
+      path: '/customers'
+      fullPath: '/reports/customers'
+      preLoaderRoute: typeof AppReportsCustomersRouteImport
+      parentRoute: typeof AppReportsRoute
     }
     '/_app/quotations/new': {
       id: '/_app/quotations/new'
@@ -685,6 +816,28 @@ const AppDocsRouteChildren: AppDocsRouteChildren = {
 const AppDocsRouteWithChildren =
   AppDocsRoute._addFileChildren(AppDocsRouteChildren)
 
+interface AppReportsRouteChildren {
+  AppReportsCustomersRoute: typeof AppReportsCustomersRoute
+  AppReportsInventoryRoute: typeof AppReportsInventoryRoute
+  AppReportsProductsRoute: typeof AppReportsProductsRoute
+  AppReportsQuotationsRoute: typeof AppReportsQuotationsRoute
+  AppReportsSalesRoute: typeof AppReportsSalesRoute
+  AppReportsIndexRoute: typeof AppReportsIndexRoute
+}
+
+const AppReportsRouteChildren: AppReportsRouteChildren = {
+  AppReportsCustomersRoute: AppReportsCustomersRoute,
+  AppReportsInventoryRoute: AppReportsInventoryRoute,
+  AppReportsProductsRoute: AppReportsProductsRoute,
+  AppReportsQuotationsRoute: AppReportsQuotationsRoute,
+  AppReportsSalesRoute: AppReportsSalesRoute,
+  AppReportsIndexRoute: AppReportsIndexRoute,
+}
+
+const AppReportsRouteWithChildren = AppReportsRoute._addFileChildren(
+  AppReportsRouteChildren,
+)
+
 interface AppQuotationsQuotationIdRouteChildren {
   AppQuotationsQuotationIdPrintRoute: typeof AppQuotationsQuotationIdPrintRoute
 }
@@ -706,6 +859,7 @@ interface AppRouteChildren {
   AppDocsRoute: typeof AppDocsRouteWithChildren
   AppPipelineRoute: typeof AppPipelineRoute
   AppProfileRoute: typeof AppProfileRoute
+  AppReportsRoute: typeof AppReportsRouteWithChildren
   AppSettingsRoute: typeof AppSettingsRoute
   AppCustomersCustomerIdRoute: typeof AppCustomersCustomerIdRoute
   AppCustomersNewRoute: typeof AppCustomersNewRoute
@@ -728,6 +882,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDocsRoute: AppDocsRouteWithChildren,
   AppPipelineRoute: AppPipelineRoute,
   AppProfileRoute: AppProfileRoute,
+  AppReportsRoute: AppReportsRouteWithChildren,
   AppSettingsRoute: AppSettingsRoute,
   AppCustomersCustomerIdRoute: AppCustomersCustomerIdRoute,
   AppCustomersNewRoute: AppCustomersNewRoute,

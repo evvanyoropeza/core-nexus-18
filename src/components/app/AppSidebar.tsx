@@ -12,6 +12,7 @@ import {
   BookOpen,
   Kanban,
   BarChart3,
+  FileBarChart,
 } from "lucide-react";
 import {
   Sidebar,
@@ -43,6 +44,7 @@ const mainNav: Array<{ to: string; label: string; icon: typeof LayoutDashboard; 
   { to: "/pipeline", label: "Pipeline", icon: Kanban },
   { to: "/orders", label: "Órdenes", icon: ShoppingCart },
   { to: "/analytics", label: "Analíticas", icon: BarChart3 },
+  { to: "/reports", label: "Reportes", icon: FileBarChart },
 ];
 
 const orgNav = [

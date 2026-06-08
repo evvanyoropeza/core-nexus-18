@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/lib/auth";
+import { TrialBanner } from "@/components/billing/TrialBanner";
 
 export function TopBar() {
   const { profile, user, signOut } = useAuth();
@@ -24,6 +25,8 @@ export function TopBar() {
     .toUpperCase();
 
   return (
+    <>
+    <TrialBanner />
     <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-border bg-background/80 px-4 backdrop-blur">
       <SidebarTrigger />
       <Separator orientation="vertical" className="h-5" />
@@ -61,5 +64,6 @@ export function TopBar() {
         </DropdownMenuContent>
       </DropdownMenu>
     </header>
+    </>
   );
 }

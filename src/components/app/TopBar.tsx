@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/lib/auth";
+import { TrialBanner } from "@/components/billing/TrialBanner";
 
 export function TopBar() {
   const { profile, user, signOut } = useAuth();

@@ -63,6 +63,9 @@ const orgNav = [
 export function AppSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { currentTenant, memberships, switchTenant } = useAuth();
+  const subQ = useSubscription();
+  const features = new Set<string>((subQ.data?.effectiveFeatures ?? []) as string[]);
+  const visibleNav = mainNav.filter((i) => !i.feature || features.has(i.feature));
 
   const isActive = (path: string) => pathname === path || pathname.startsWith(path + "/");
 

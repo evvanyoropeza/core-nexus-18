@@ -16,12 +16,15 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as QTokenRouteImport } from './routes/q.$token'
+import { Route as InviteTokenRouteImport } from './routes/invite.$token'
+import { Route as AppTeamRouteImport } from './routes/_app/team'
 import { Route as AppSettingsRouteImport } from './routes/_app/settings'
 import { Route as AppReportsRouteImport } from './routes/_app/reports'
 import { Route as AppProfileRouteImport } from './routes/_app/profile'
 import { Route as AppPipelineRouteImport } from './routes/_app/pipeline'
 import { Route as AppDocsRouteImport } from './routes/_app/docs'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
+import { Route as AppBillingRouteImport } from './routes/_app/billing'
 import { Route as AppAuditRouteImport } from './routes/_app/audit'
 import { Route as AppAnalyticsRouteImport } from './routes/_app/analytics'
 import { Route as AppReportsIndexRouteImport } from './routes/_app/reports.index'
@@ -84,6 +87,16 @@ const QTokenRoute = QTokenRouteImport.update({
   path: '/q/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InviteTokenRoute = InviteTokenRouteImport.update({
+  id: '/invite/$token',
+  path: '/invite/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppTeamRoute = AppTeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppSettingsRoute = AppSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -112,6 +125,11 @@ const AppDocsRoute = AppDocsRouteImport.update({
 const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBillingRoute = AppBillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
   getParentRoute: () => AppRoute,
 } as any)
 const AppAuditRoute = AppAuditRouteImport.update({
@@ -260,12 +278,15 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/analytics': typeof AppAnalyticsRoute
   '/audit': typeof AppAuditRoute
+  '/billing': typeof AppBillingRoute
   '/dashboard': typeof AppDashboardRoute
   '/docs': typeof AppDocsRouteWithChildren
   '/pipeline': typeof AppPipelineRoute
   '/profile': typeof AppProfileRoute
   '/reports': typeof AppReportsRouteWithChildren
   '/settings': typeof AppSettingsRoute
+  '/team': typeof AppTeamRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/q/$token': typeof QTokenRoute
   '/customers/$customerId': typeof AppCustomersCustomerIdRoute
   '/customers/new': typeof AppCustomersNewRoute
@@ -301,10 +322,13 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/analytics': typeof AppAnalyticsRoute
   '/audit': typeof AppAuditRoute
+  '/billing': typeof AppBillingRoute
   '/dashboard': typeof AppDashboardRoute
   '/pipeline': typeof AppPipelineRoute
   '/profile': typeof AppProfileRoute
   '/settings': typeof AppSettingsRoute
+  '/team': typeof AppTeamRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/q/$token': typeof QTokenRoute
   '/customers/$customerId': typeof AppCustomersCustomerIdRoute
   '/customers/new': typeof AppCustomersNewRoute
@@ -342,12 +366,15 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_app/analytics': typeof AppAnalyticsRoute
   '/_app/audit': typeof AppAuditRoute
+  '/_app/billing': typeof AppBillingRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/docs': typeof AppDocsRouteWithChildren
   '/_app/pipeline': typeof AppPipelineRoute
   '/_app/profile': typeof AppProfileRoute
   '/_app/reports': typeof AppReportsRouteWithChildren
   '/_app/settings': typeof AppSettingsRoute
+  '/_app/team': typeof AppTeamRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/q/$token': typeof QTokenRoute
   '/_app/customers/$customerId': typeof AppCustomersCustomerIdRoute
   '/_app/customers/new': typeof AppCustomersNewRoute
@@ -385,12 +412,15 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/analytics'
     | '/audit'
+    | '/billing'
     | '/dashboard'
     | '/docs'
     | '/pipeline'
     | '/profile'
     | '/reports'
     | '/settings'
+    | '/team'
+    | '/invite/$token'
     | '/q/$token'
     | '/customers/$customerId'
     | '/customers/new'
@@ -426,10 +456,13 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/analytics'
     | '/audit'
+    | '/billing'
     | '/dashboard'
     | '/pipeline'
     | '/profile'
     | '/settings'
+    | '/team'
+    | '/invite/$token'
     | '/q/$token'
     | '/customers/$customerId'
     | '/customers/new'
@@ -466,12 +499,15 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_app/analytics'
     | '/_app/audit'
+    | '/_app/billing'
     | '/_app/dashboard'
     | '/_app/docs'
     | '/_app/pipeline'
     | '/_app/profile'
     | '/_app/reports'
     | '/_app/settings'
+    | '/_app/team'
+    | '/invite/$token'
     | '/q/$token'
     | '/_app/customers/$customerId'
     | '/_app/customers/new'
@@ -507,6 +543,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  InviteTokenRoute: typeof InviteTokenRoute
   QTokenRoute: typeof QTokenRoute
 }
 
@@ -561,6 +598,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof QTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/invite/$token': {
+      id: '/invite/$token'
+      path: '/invite/$token'
+      fullPath: '/invite/$token'
+      preLoaderRoute: typeof InviteTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/team': {
+      id: '/_app/team'
+      path: '/team'
+      fullPath: '/team'
+      preLoaderRoute: typeof AppTeamRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/settings': {
       id: '/_app/settings'
       path: '/settings'
@@ -601,6 +652,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/billing': {
+      id: '/_app/billing'
+      path: '/billing'
+      fullPath: '/billing'
+      preLoaderRoute: typeof AppBillingRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/audit': {
@@ -855,12 +913,14 @@ const AppQuotationsQuotationIdRouteWithChildren =
 interface AppRouteChildren {
   AppAnalyticsRoute: typeof AppAnalyticsRoute
   AppAuditRoute: typeof AppAuditRoute
+  AppBillingRoute: typeof AppBillingRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppDocsRoute: typeof AppDocsRouteWithChildren
   AppPipelineRoute: typeof AppPipelineRoute
   AppProfileRoute: typeof AppProfileRoute
   AppReportsRoute: typeof AppReportsRouteWithChildren
   AppSettingsRoute: typeof AppSettingsRoute
+  AppTeamRoute: typeof AppTeamRoute
   AppCustomersCustomerIdRoute: typeof AppCustomersCustomerIdRoute
   AppCustomersNewRoute: typeof AppCustomersNewRoute
   AppOrdersOrderIdRoute: typeof AppOrdersOrderIdRoute
@@ -878,12 +938,14 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppAnalyticsRoute: AppAnalyticsRoute,
   AppAuditRoute: AppAuditRoute,
+  AppBillingRoute: AppBillingRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppDocsRoute: AppDocsRouteWithChildren,
   AppPipelineRoute: AppPipelineRoute,
   AppProfileRoute: AppProfileRoute,
   AppReportsRoute: AppReportsRouteWithChildren,
   AppSettingsRoute: AppSettingsRoute,
+  AppTeamRoute: AppTeamRoute,
   AppCustomersCustomerIdRoute: AppCustomersCustomerIdRoute,
   AppCustomersNewRoute: AppCustomersNewRoute,
   AppOrdersOrderIdRoute: AppOrdersOrderIdRoute,
@@ -907,6 +969,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  InviteTokenRoute: InviteTokenRoute,
   QTokenRoute: QTokenRoute,
 }
 export const routeTree = rootRouteImport

@@ -64,5 +64,6 @@ export function TopBar() {
         </DropdownMenuContent>
       </DropdownMenu>
     </header>
+    </>
   );
 }

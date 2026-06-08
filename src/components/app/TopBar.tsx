@@ -25,6 +25,8 @@ export function TopBar() {
     .toUpperCase();
 
   return (
+    <>
+    <TrialBanner />
     <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-border bg-background/80 px-4 backdrop-blur">
       <SidebarTrigger />
       <Separator orientation="vertical" className="h-5" />

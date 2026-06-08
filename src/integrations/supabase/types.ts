@@ -293,6 +293,54 @@ export type Database = {
           },
         ]
       }
+      plans: {
+        Row: {
+          code: string
+          created_at: string
+          currency: string
+          description: string | null
+          features: Json
+          id: string
+          is_active: boolean
+          limits: Json
+          max_users: number | null
+          name: string
+          price_monthly: number
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          features?: Json
+          id?: string
+          is_active?: boolean
+          limits?: Json
+          max_users?: number | null
+          name: string
+          price_monthly?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          features?: Json
+          id?: string
+          is_active?: boolean
+          limits?: Json
+          max_users?: number | null
+          name?: string
+          price_monthly?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       product_categories: {
         Row: {
           created_at: string
@@ -940,6 +988,151 @@ export type Database = {
           },
         ]
       }
+      subscriptions: {
+        Row: {
+          cancelled_at: string | null
+          created_at: string
+          end_date: string | null
+          id: string
+          notes: string | null
+          plan_id: string
+          start_date: string
+          status: Database["public"]["Enums"]["subscription_status"]
+          tenant_id: string
+          trial_end_date: string | null
+          updated_at: string
+        }
+        Insert: {
+          cancelled_at?: string | null
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          notes?: string | null
+          plan_id: string
+          start_date?: string
+          status?: Database["public"]["Enums"]["subscription_status"]
+          tenant_id: string
+          trial_end_date?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cancelled_at?: string | null
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          notes?: string | null
+          plan_id?: string
+          start_date?: string
+          status?: Database["public"]["Enums"]["subscription_status"]
+          tenant_id?: string
+          trial_end_date?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: true
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tenant_feature_overrides: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          enabled: boolean
+          feature_code: string
+          id: string
+          reason: string | null
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          enabled?: boolean
+          feature_code: string
+          id?: string
+          reason?: string | null
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          enabled?: boolean
+          feature_code?: string
+          id?: string
+          reason?: string | null
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_feature_overrides_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tenant_invitations: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          invited_by: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          tenant_id: string
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: string
+          invited_by?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          tenant_id: string
+          token?: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          tenant_id?: string
+          token?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_invitations_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tenants: {
         Row: {
           created_at: string
@@ -986,8 +1179,11 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          invited_at: string | null
           invited_by: string | null
           is_active: boolean
+          is_owner: boolean
+          last_active_at: string | null
           role: Database["public"]["Enums"]["app_role"]
           tenant_id: string
           user_id: string
@@ -995,8 +1191,11 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          invited_at?: string | null
           invited_by?: string | null
           is_active?: boolean
+          is_owner?: boolean
+          last_active_at?: string | null
           role?: Database["public"]["Enums"]["app_role"]
           tenant_id: string
           user_id: string
@@ -1004,8 +1203,11 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          invited_at?: string | null
           invited_by?: string | null
           is_active?: boolean
+          is_owner?: boolean
+          last_active_at?: string | null
           role?: Database["public"]["Enums"]["app_role"]
           tenant_id?: string
           user_id?: string
@@ -1025,9 +1227,32 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      auto_suspend_expired_trials: { Args: never; Returns: undefined }
       convert_quotation_to_order: {
         Args: { _quotation_id: string }
         Returns: string
+      }
+      current_subscription: {
+        Args: { _tenant_id: string }
+        Returns: {
+          cancelled_at: string | null
+          created_at: string
+          end_date: string | null
+          id: string
+          notes: string | null
+          plan_id: string
+          start_date: string
+          status: Database["public"]["Enums"]["subscription_status"]
+          tenant_id: string
+          trial_end_date: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "subscriptions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       current_tenant_id: { Args: never; Returns: string }
       duplicate_quotation: { Args: { _quotation_id: string }; Returns: string }
@@ -1067,6 +1292,10 @@ export type Database = {
         Args: { _quotation_id: string; _reason?: string }
         Returns: number
       }
+      tenant_has_feature: {
+        Args: { _feature: string; _tenant_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role:
@@ -1076,6 +1305,7 @@ export type Database = {
         | "operations"
         | "finance"
         | "viewer"
+        | "warehouse"
       product_type: "product" | "service"
       quotation_status:
         | "draft"
@@ -1091,6 +1321,7 @@ export type Database = {
         | "fulfilled"
         | "cancelled"
       stock_movement_type: "entry" | "exit" | "adjustment"
+      subscription_status: "trial" | "active" | "suspended" | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1225,6 +1456,7 @@ export const Constants = {
         "operations",
         "finance",
         "viewer",
+        "warehouse",
       ],
       product_type: ["product", "service"],
       quotation_status: [
@@ -1243,6 +1475,7 @@ export const Constants = {
         "cancelled",
       ],
       stock_movement_type: ["entry", "exit", "adjustment"],
+      subscription_status: ["trial", "active", "suspended", "cancelled"],
     },
   },
 } as const

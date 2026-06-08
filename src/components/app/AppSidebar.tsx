@@ -13,6 +13,8 @@ import {
   Kanban,
   BarChart3,
   FileBarChart,
+  CreditCard,
+  UsersRound,
 } from "lucide-react";
 import {
   Sidebar,
@@ -35,19 +37,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useSubscription, type FeatureCode } from "@/lib/subscription";
 
-const mainNav: Array<{ to: string; label: string; icon: typeof LayoutDashboard; soon?: boolean }> = [
+type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; soon?: boolean; feature?: FeatureCode };
+
+const mainNav: NavItem[] = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/customers", label: "Clientes", icon: Users },
-  { to: "/products", label: "Productos", icon: Package },
-  { to: "/quotations", label: "Cotizaciones", icon: FileText },
-  { to: "/pipeline", label: "Pipeline", icon: Kanban },
-  { to: "/orders", label: "Órdenes", icon: ShoppingCart },
-  { to: "/analytics", label: "Analíticas", icon: BarChart3 },
-  { to: "/reports", label: "Reportes", icon: FileBarChart },
+  { to: "/customers", label: "Clientes", icon: Users, feature: "customers" },
+  { to: "/products", label: "Productos", icon: Package, feature: "customers" },
+  { to: "/quotations", label: "Cotizaciones", icon: FileText, feature: "quotations" },
+  { to: "/pipeline", label: "Pipeline", icon: Kanban, feature: "pipeline" },
+  { to: "/orders", label: "Órdenes", icon: ShoppingCart, feature: "orders" },
+  { to: "/analytics", label: "Analíticas", icon: BarChart3, feature: "analytics" },
+  { to: "/reports", label: "Reportes", icon: FileBarChart, feature: "reports" },
 ];
 
 const orgNav = [
+  { to: "/team", label: "Equipo", icon: UsersRound },
+  { to: "/billing", label: "Suscripción", icon: CreditCard },
   { to: "/docs", label: "Ayuda", icon: BookOpen },
   { to: "/audit", label: "Actividad", icon: History },
   { to: "/settings", label: "Configuración", icon: Settings },

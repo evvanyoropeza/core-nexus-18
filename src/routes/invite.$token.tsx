@@ -50,7 +50,7 @@ function InvitePage() {
           </CardHeader>
           <CardContent className="flex gap-2">
             <Button asChild className="flex-1">
-              <Link to="/login" search={{ next: `/invite/${token}` } as any}>Iniciar sesión</Link>
+              <Link to="/login">Iniciar sesión</Link>
             </Button>
             <Button asChild variant="outline" className="flex-1">
               <Link to="/register">Crear cuenta</Link>

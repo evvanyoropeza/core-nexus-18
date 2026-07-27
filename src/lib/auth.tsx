@@ -123,13 +123,12 @@ export async function logAudit(input: {
 }) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;
-  await supabase.from("audit_logs").insert({
-    tenant_id: input.tenantId,
-    user_id: user.id,
-    action: input.action,
-    entity_type: input.entityType ?? null,
-    entity_id: input.entityId ?? null,
-    metadata: (input.metadata ?? {}) as never,
-    user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+  await supabase.rpc("log_audit_event", {
+    _tenant_id: input.tenantId,
+    _action: input.action,
+    _entity_type: input.entityType ?? null,
+    _entity_id: input.entityId ?? null,
+    _metadata: (input.metadata ?? {}) as never,
   });
 }
+

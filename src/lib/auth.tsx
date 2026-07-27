@@ -126,8 +126,8 @@ export async function logAudit(input: {
   await supabase.rpc("log_audit_event", {
     _tenant_id: input.tenantId,
     _action: input.action,
-    _entity_type: input.entityType ?? null,
-    _entity_id: input.entityId ?? null,
+    _entity_type: input.entityType ?? undefined,
+    _entity_id: input.entityId ?? undefined,
     _metadata: (input.metadata ?? {}) as never,
   });
 }

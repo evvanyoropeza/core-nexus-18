@@ -1281,13 +1281,21 @@ export type Database = {
         Args: { _tenant_id: string; _user_id: string }
         Returns: boolean
       }
+      log_audit_event: {
+        Args: {
+          _action: string
+          _entity_id?: string
+          _entity_type?: string
+          _metadata?: Json
+          _tenant_id: string
+        }
+        Returns: string
+      }
       recalc_order_totals: { Args: { _order_id: string }; Returns: undefined }
       recalc_quotation_totals: {
         Args: { _quotation_id: string }
         Returns: undefined
       }
-      show_limit: { Args: never; Returns: number }
-      show_trgm: { Args: { "": string }; Returns: string[] }
       snapshot_quotation_version: {
         Args: { _quotation_id: string; _reason?: string }
         Returns: number

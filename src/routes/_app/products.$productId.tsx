@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { ProductForm } from "@/components/products/ProductForm";
 import { useAuth, logAudit } from "@/lib/auth";
+import { canViewCosts } from "@/lib/permissions";
 import { supabase } from "@/integrations/supabase/client";
 import {
   fetchCategories, fetchPriceTiers, nullifyEmpty, productSchema, priceTierSchema,

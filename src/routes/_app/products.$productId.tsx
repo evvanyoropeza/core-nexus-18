@@ -97,6 +97,7 @@ function ProductDetailPage() {
   if (!product) return <div className="text-sm text-muted-foreground">Producto no encontrado.</div>;
 
   const margin = marginPct(Number(product.list_price), Number(product.cost));
+  const showCosts = canViewCosts(currentTenant?.role);
 
   return (
     <div className="space-y-6">
@@ -138,8 +139,12 @@ function ProductDetailPage() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Precio</div><div className="text-lg font-semibold tabular-nums">${Number(product.list_price).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div></CardContent></Card>
-        <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Costo</div><div className="text-lg font-semibold tabular-nums">${Number(product.cost).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div></CardContent></Card>
-        <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Margen</div><div className="text-lg font-semibold">{margin !== null ? `${margin.toFixed(1)}%` : "—"}</div></CardContent></Card>
+        {showCosts && (
+          <>
+            <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Costo</div><div className="text-lg font-semibold tabular-nums">${Number(product.cost).toLocaleString(undefined, { minimumFractionDigits: 2 })}</div></CardContent></Card>
+            <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Margen</div><div className="text-lg font-semibold">{margin !== null ? `${margin.toFixed(1)}%` : "—"}</div></CardContent></Card>
+          </>
+        )}
         <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Stock</div><div className="text-lg font-semibold tabular-nums">{product.type === "service" ? "—" : Number(product.stock_current).toLocaleString()}</div></CardContent></Card>
       </div>
 

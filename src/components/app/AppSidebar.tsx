@@ -69,7 +69,11 @@ export function AppSidebar() {
   const { currentTenant, memberships, switchTenant } = useAuth();
   const subQ = useSubscription();
   const features = new Set<string>((subQ.data?.effectiveFeatures ?? []) as string[]);
-  const visibleNav = mainNav.filter((i) => !i.feature || features.has(i.feature));
+  const role = currentTenant?.role;
+  const visibleNav = mainNav.filter(
+    (i) => (!i.feature || features.has(i.feature)) && canSeeNav(role, i.nav),
+  );
+  const visibleOrgNav = orgNav.filter((i) => canSeeNav(role, i.nav));
 
   const isActive = (path: string) => pathname === path || pathname.startsWith(path + "/");
 
@@ -143,7 +147,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>Organización</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {orgNav.map((item) => (
+              {visibleOrgNav.map((item) => (
                 <SidebarMenuItem key={item.to}>
                   <SidebarMenuButton asChild isActive={isActive(item.to)} tooltip={item.label}>
                     <Link to={item.to}>

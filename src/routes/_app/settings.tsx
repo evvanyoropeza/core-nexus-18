@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { RoleGuard } from "@/components/app/RoleGuard";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -12,7 +13,11 @@ import { useAuth, logAudit } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_app/settings")({
-  component: SettingsPage,
+  component: () => (
+    <RoleGuard nav="settings">
+      <SettingsPage />
+    </RoleGuard>
+  ),
 });
 
 function SettingsPage() {

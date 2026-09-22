@@ -14,6 +14,8 @@ import {
   type Product, type ProductCategory, type ProductForm as PForm,
   UNITS, marginPct,
 } from "@/lib/products";
+import { useAuth } from "@/lib/auth";
+import { canViewCosts } from "@/lib/permissions";
 
 interface Props {
   initial?: Partial<Product>;
@@ -23,6 +25,8 @@ interface Props {
 }
 
 export function ProductForm({ initial, categories, submitting, onSubmit }: Props) {
+  const { currentTenant } = useAuth();
+  const showCosts = canViewCosts(currentTenant?.role);
   const [form, setForm] = useState<PForm>({
     sku: initial?.sku ?? "",
     name: initial?.name ?? "",
@@ -119,15 +123,17 @@ export function ProductForm({ initial, categories, submitting, onSubmit }: Props
             <Label htmlFor="list_price">Precio de lista</Label>
             <Input id="list_price" type="number" step="0.01" min="0" value={form.list_price} onChange={(e) => set("list_price", Number(e.target.value))} />
           </div>
-          <div>
-            <Label htmlFor="cost">Costo</Label>
-            <Input id="cost" type="number" step="0.01" min="0" value={form.cost} onChange={(e) => set("cost", Number(e.target.value))} />
-          </div>
+          {showCosts && (
+            <div>
+              <Label htmlFor="cost">Costo</Label>
+              <Input id="cost" type="number" step="0.01" min="0" value={form.cost} onChange={(e) => set("cost", Number(e.target.value))} />
+            </div>
+          )}
           <div>
             <Label htmlFor="tax_rate">IVA (%)</Label>
             <Input id="tax_rate" type="number" step="0.01" min="0" max="100" value={form.tax_rate} onChange={(e) => set("tax_rate", Number(e.target.value))} />
           </div>
-          {margin !== null && (
+          {showCosts && margin !== null && (
             <div className="md:col-span-3 text-sm text-muted-foreground">
               Margen estimado: <span className={margin >= 0 ? "text-emerald-600 font-medium" : "text-destructive font-medium"}>{margin.toFixed(2)}%</span>
             </div>

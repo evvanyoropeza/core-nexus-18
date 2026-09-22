@@ -19,12 +19,17 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useAuth } from "@/lib/auth";
 import { useIsOwner, useSubscription } from "@/lib/subscription";
 import { ROLE_LABELS } from "@/lib/permissions";
+import { RoleGuard } from "@/components/app/RoleGuard";
 import {
   listTenantUsers, inviteUser, setUserRole, setUserActive, revokeInvitation,
 } from "@/lib/tenant-admin.functions";
 
 export const Route = createFileRoute("/_app/team")({
-  component: TeamPage,
+  component: () => (
+    <RoleGuard nav="team">
+      <TeamPage />
+    </RoleGuard>
+  ),
 });
 
 const ROLES = ["admin", "sales", "operations", "warehouse", "finance", "viewer"] as const;

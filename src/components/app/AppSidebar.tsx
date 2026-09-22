@@ -38,26 +38,30 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSubscription, type FeatureCode } from "@/lib/subscription";
+import { canSeeNav, type NavKey } from "@/lib/permissions";
 
-type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; soon?: boolean; feature?: FeatureCode };
+type NavItem = {
+  to: string; label: string; icon: typeof LayoutDashboard;
+  soon?: boolean; feature?: FeatureCode; nav: NavKey;
+};
 
 const mainNav: NavItem[] = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/customers", label: "Clientes", icon: Users, feature: "customers" },
-  { to: "/products", label: "Productos", icon: Package, feature: "customers" },
-  { to: "/quotations", label: "Cotizaciones", icon: FileText, feature: "quotations" },
-  { to: "/pipeline", label: "Pipeline", icon: Kanban, feature: "pipeline" },
-  { to: "/orders", label: "Órdenes", icon: ShoppingCart, feature: "orders" },
-  { to: "/analytics", label: "Analíticas", icon: BarChart3, feature: "analytics" },
-  { to: "/reports", label: "Reportes", icon: FileBarChart, feature: "reports" },
+  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, nav: "dashboard" },
+  { to: "/customers", label: "Clientes", icon: Users, feature: "customers", nav: "customers" },
+  { to: "/products", label: "Productos", icon: Package, feature: "customers", nav: "products" },
+  { to: "/quotations", label: "Cotizaciones", icon: FileText, feature: "quotations", nav: "quotations" },
+  { to: "/pipeline", label: "Pipeline", icon: Kanban, feature: "pipeline", nav: "pipeline" },
+  { to: "/orders", label: "Órdenes", icon: ShoppingCart, feature: "orders", nav: "orders" },
+  { to: "/analytics", label: "Analíticas", icon: BarChart3, feature: "analytics", nav: "analytics" },
+  { to: "/reports", label: "Reportes", icon: FileBarChart, feature: "reports", nav: "reports" },
 ];
 
-const orgNav = [
-  { to: "/team", label: "Equipo", icon: UsersRound },
-  { to: "/billing", label: "Suscripción", icon: CreditCard },
-  { to: "/docs", label: "Ayuda", icon: BookOpen },
-  { to: "/audit", label: "Actividad", icon: History },
-  { to: "/settings", label: "Configuración", icon: Settings },
+const orgNav: NavItem[] = [
+  { to: "/team", label: "Equipo", icon: UsersRound, nav: "team" },
+  { to: "/billing", label: "Suscripción", icon: CreditCard, nav: "billing" },
+  { to: "/docs", label: "Ayuda", icon: BookOpen, nav: "docs" },
+  { to: "/audit", label: "Actividad", icon: History, nav: "audit" },
+  { to: "/settings", label: "Configuración", icon: Settings, nav: "settings" },
 ];
 
 export function AppSidebar() {
@@ -65,7 +69,11 @@ export function AppSidebar() {
   const { currentTenant, memberships, switchTenant } = useAuth();
   const subQ = useSubscription();
   const features = new Set<string>((subQ.data?.effectiveFeatures ?? []) as string[]);
-  const visibleNav = mainNav.filter((i) => !i.feature || features.has(i.feature));
+  const role = currentTenant?.role;
+  const visibleNav = mainNav.filter(
+    (i) => (!i.feature || features.has(i.feature)) && canSeeNav(role, i.nav),
+  );
+  const visibleOrgNav = orgNav.filter((i) => canSeeNav(role, i.nav));
 
   const isActive = (path: string) => pathname === path || pathname.startsWith(path + "/");
 
@@ -139,7 +147,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>Organización</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {orgNav.map((item) => (
+              {visibleOrgNav.map((item) => (
                 <SidebarMenuItem key={item.to}>
                   <SidebarMenuButton asChild isActive={isActive(item.to)} tooltip={item.label}>
                     <Link to={item.to}>

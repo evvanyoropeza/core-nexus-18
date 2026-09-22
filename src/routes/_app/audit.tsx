@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { RoleGuard } from "@/components/app/RoleGuard";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,7 +9,11 @@ import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_app/audit")({
-  component: AuditPage,
+  component: () => (
+    <RoleGuard nav="audit">
+      <AuditPage />
+    </RoleGuard>
+  ),
 });
 
 function AuditPage() {

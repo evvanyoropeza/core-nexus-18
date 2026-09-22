@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { RoleGuard } from "@/components/app/RoleGuard";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -12,7 +13,11 @@ import { useSubscription, useIsOwner } from "@/lib/subscription";
 import { listPlans, changePlan, cancelSubscription } from "@/lib/billing.functions";
 
 export const Route = createFileRoute("/_app/billing")({
-  component: BillingPage,
+  component: () => (
+    <RoleGuard nav="billing">
+      <BillingPage />
+    </RoleGuard>
+  ),
 });
 
 const FEATURE_LABELS: Record<string, string> = {

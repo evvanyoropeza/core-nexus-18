@@ -59,13 +59,14 @@ function TeamPage() {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<(typeof ROLES)[number]>("sales");
 
+  const [createdLink, setCreatedLink] = useState<{ url: string; email: string } | null>(null);
+
   const inviteMut = useMutation({
     mutationFn: () => inviteFn({ data: { tenantId: tenantId!, email, role } }),
     onSuccess: (inv: any) => {
-      toast.success("Invitación creada");
       const url = `${window.location.origin}/invite/${inv.token}`;
       navigator.clipboard?.writeText(url).catch(() => {});
-      toast.info("Link copiado al portapapeles");
+      setCreatedLink({ url, email: inv.email });
       setOpen(false); setEmail("");
       invalidate();
     },
@@ -136,6 +137,30 @@ function TeamPage() {
           </Dialog>
         )}
       </div>
+
+      <Dialog open={!!createdLink} onOpenChange={(o) => !o && setCreatedLink(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Invitación creada</DialogTitle>
+            <DialogDescription>
+              El envío automático de correos aún no está activo. Comparte este link con{" "}
+              <strong>{createdLink?.email}</strong> (por WhatsApp o tu correo). Debe abrirlo y crear
+              su cuenta con ese mismo correo; entrará directamente con el rol asignado.
+            </DialogDescription>
+          </DialogHeader>
+          <Input readOnly value={createdLink?.url ?? ""} onFocus={(e) => e.target.select()} />
+          <DialogFooter>
+            <Button
+              onClick={() => {
+                navigator.clipboard?.writeText(createdLink!.url);
+                toast.success("Link copiado");
+              }}
+            >
+              Copiar link
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Card>
         <CardHeader>

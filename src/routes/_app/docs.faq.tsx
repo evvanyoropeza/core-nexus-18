@@ -17,7 +17,19 @@ const items = [
   },
   {
     q: "¿Cómo invito a un compañero de equipo?",
-    a: "Por ahora, los miembros se gestionan desde la sección de Configuración. Próximamente habrá invitaciones por correo electrónico.",
+    a: "Ve a Equipo → Invitar usuario, escribe su correo y elige su rol. Se mostrará un link de invitación para copiar y compartir; la persona debe abrirlo y registrarse con ese mismo correo para entrar a tu empresa.",
+  },
+  {
+    q: "¿Cómo cambio el rol de un colaborador?",
+    a: "En Equipo, sección Miembros, usa el selector de la columna Rol. El cambio aplica de inmediato; el usuario verá su nuevo menú al refrescar la página.",
+  },
+  {
+    q: "¿Qué pasa si no hay stock suficiente al surtir una orden?",
+    a: "El sistema no permite surtir más de lo disponible. Registra una entrada de inventario en el producto y vuelve a intentarlo.",
+  },
+  {
+    q: "¿Cómo exporto o imprimo un reporte?",
+    a: "En Reportes elige el tipo, aplica filtros y usa 'Exportar CSV' para Excel o 'Imprimir' para obtener un PDF.",
   },
   {
     q: "¿Qué pasa si edito una cotización ya enviada?",

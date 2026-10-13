@@ -35,6 +35,15 @@ export const Route = createFileRoute("/_app/docs/orders")({
         Usa <strong>Surtir todo</strong> para marcar la línea como completa en un clic.
       </p>
 
+      <h2>Descuento automático de inventario</h2>
+      <p>
+        Al surtir una partida, el sistema descuenta las unidades del inventario y registra una
+        <strong> salida</strong> en el kardex con el folio de la orden. Si no hay existencias
+        suficientes, el surtido se bloquea y se muestra un aviso; registra primero una entrada.
+      </p>
+
+
+
       <h2>Buenas prácticas</h2>
       <ul>
         <li>Confirma la orden solo cuando el inventario esté reservado.</li>

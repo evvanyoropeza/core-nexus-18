@@ -7,6 +7,9 @@ import {
   ShoppingCart,
   HelpCircle,
   Rocket,
+  KanbanSquare,
+  BarChart3,
+  ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -17,9 +20,12 @@ export const Route = createFileRoute("/_app/docs")({
 const sections = [
   { to: "/docs", label: "Introducción", icon: Rocket, exact: true },
   { to: "/docs/customers", label: "Clientes", icon: Users },
-  { to: "/docs/products", label: "Productos", icon: Package },
+  { to: "/docs/products", label: "Productos e inventario", icon: Package },
   { to: "/docs/quotations", label: "Cotizaciones", icon: FileText },
+  { to: "/docs/pipeline", label: "Pipeline comercial", icon: KanbanSquare },
   { to: "/docs/orders", label: "Órdenes de venta", icon: ShoppingCart },
+  { to: "/docs/reports", label: "Reportes", icon: BarChart3 },
+  { to: "/docs/roles", label: "Roles y permisos", icon: ShieldCheck },
   { to: "/docs/faq", label: "Preguntas frecuentes", icon: HelpCircle },
 ];
 

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Card, CardContent } from "@/components/ui/card";
-import { Users, Package, FileText, ShoppingCart } from "lucide-react";
+import { Users, Package, FileText, ShoppingCart, KanbanSquare, BarChart3, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/_app/docs/")({
   component: DocsIndex,
@@ -8,9 +8,12 @@ export const Route = createFileRoute("/_app/docs/")({
 
 const modules = [
   { to: "/docs/customers", icon: Users, title: "Clientes", desc: "Alta, edición y segmentación." },
-  { to: "/docs/products", icon: Package, title: "Productos", desc: "Catálogo, precios y categorías." },
+  { to: "/docs/products", icon: Package, title: "Productos e inventario", desc: "Catálogo, kardex y movimientos." },
   { to: "/docs/quotations", icon: FileText, title: "Cotizaciones", desc: "Crear, enviar y versionar." },
-  { to: "/docs/orders", icon: ShoppingCart, title: "Órdenes", desc: "Conversión y cumplimiento." },
+  { to: "/docs/pipeline", icon: KanbanSquare, title: "Pipeline comercial", desc: "Tablero Kanban por etapa." },
+  { to: "/docs/orders", icon: ShoppingCart, title: "Órdenes", desc: "Conversión, surtido y stock." },
+  { to: "/docs/reports", icon: BarChart3, title: "Reportes", desc: "Consultas, CSV e impresión." },
+  { to: "/docs/roles", icon: ShieldCheck, title: "Roles y permisos", desc: "Perfiles, accesos e invitaciones." },
 ];
 
 function DocsIndex() {

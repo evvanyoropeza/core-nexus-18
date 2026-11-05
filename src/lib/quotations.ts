@@ -121,3 +121,27 @@ export async function generateFolio(tenantId: string): Promise<string> {
   if (error) throw error;
   return data as string;
 }
+
+// ---------- Aprobación de descuentos ----------
+export const DISCOUNT_APPROVAL_THRESHOLD = 15;
+
+export function maxDiscountOf(q: { discount_pct: number | null }, items: { discount_pct: number | null }[]) {
+  return Math.max(Number(q.discount_pct ?? 0), ...items.map((i) => Number(i.discount_pct ?? 0)), 0);
+}
+
+/** true si la cotización aún necesita autorización para avanzar */
+export function needsDiscountApproval(
+  q: { discount_pct: number | null; approval_status: string; approved_discount_pct: number | null },
+  items: { discount_pct: number | null }[],
+) {
+  const max = maxDiscountOf(q, items);
+  if (max <= DISCOUNT_APPROVAL_THRESHOLD) return false;
+  return !(q.approval_status === "approved" && Number(q.approved_discount_pct ?? 0) >= max);
+}
+
+export const APPROVAL_LABEL: Record<string, string> = {
+  not_required: "",
+  pending: "Pendiente de aprobación",
+  approved: "Descuento aprobado",
+  rejected: "Descuento rechazado",
+};

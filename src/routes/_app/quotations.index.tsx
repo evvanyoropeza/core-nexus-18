@@ -129,6 +129,9 @@ function QuotationsList() {
                         <TableCell>{r.valid_until ?? "—"}</TableCell>
                         <TableCell>
                           <Badge variant={STATUS_VARIANT[r.status]}>{STATUS_LABEL[r.status]}</Badge>
+                          {r.approval_status === "pending" && (
+                            <Badge variant="outline" className="ml-1 border-warning/60 bg-warning/10">Pend. aprobación</Badge>
+                          )}
                         </TableCell>
                         <TableCell className="text-right font-medium">{formatMoney(r.total, r.currency)}</TableCell>
                       </TableRow>

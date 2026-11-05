@@ -692,6 +692,13 @@ export type Database = {
       }
       quotations: {
         Row: {
+          approval_decided_at: string | null
+          approval_decided_by: string | null
+          approval_note: string | null
+          approval_requested_at: string | null
+          approval_requested_by: string | null
+          approval_status: string
+          approved_discount_pct: number | null
           created_at: string
           created_by: string | null
           currency: string
@@ -717,6 +724,13 @@ export type Database = {
           valid_until: string | null
         }
         Insert: {
+          approval_decided_at?: string | null
+          approval_decided_by?: string | null
+          approval_note?: string | null
+          approval_requested_at?: string | null
+          approval_requested_by?: string | null
+          approval_status?: string
+          approved_discount_pct?: number | null
           created_at?: string
           created_by?: string | null
           currency?: string
@@ -742,6 +756,13 @@ export type Database = {
           valid_until?: string | null
         }
         Update: {
+          approval_decided_at?: string | null
+          approval_decided_by?: string | null
+          approval_note?: string | null
+          approval_requested_at?: string | null
+          approval_requested_by?: string | null
+          approval_status?: string
+          approved_discount_pct?: number | null
           created_at?: string
           created_by?: string | null
           currency?: string
@@ -1255,6 +1276,10 @@ export type Database = {
         }
       }
       current_tenant_id: { Args: never; Returns: string }
+      decide_discount_approval: {
+        Args: { _approve: boolean; _note: string; _quotation_id: string }
+        Returns: undefined
+      }
       duplicate_quotation: { Args: { _quotation_id: string }; Returns: string }
       generate_order_folio: { Args: { _tenant_id: string }; Returns: string }
       generate_quotation_folio: {
@@ -1291,8 +1316,16 @@ export type Database = {
         }
         Returns: string
       }
+      quotation_max_discount: {
+        Args: { _quotation_id: string }
+        Returns: number
+      }
       recalc_order_totals: { Args: { _order_id: string }; Returns: undefined }
       recalc_quotation_totals: {
+        Args: { _quotation_id: string }
+        Returns: undefined
+      }
+      request_discount_approval: {
         Args: { _quotation_id: string }
         Returns: undefined
       }

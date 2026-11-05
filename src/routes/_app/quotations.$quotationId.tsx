@@ -32,7 +32,11 @@ import {
   fetchQuotation,
   fetchQuotationItems,
   formatMoney,
+  maxDiscountOf,
+  needsDiscountApproval,
+  DISCOUNT_APPROVAL_THRESHOLD,
 } from "@/lib/quotations";
+import { DiscountApprovalBanner } from "@/components/quotations/DiscountApprovalBanner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -106,6 +110,9 @@ function QuotationDetail() {
 
   const snap = (q.customer_snapshot as Record<string, string | null>) ?? {};
   const isLocked = q.status !== "draft";
+  const isAdmin = hasRole(["admin"]);
+  const maxDiscount = maxDiscountOf(q, items);
+  const blocked = !isAdmin && needsDiscountApproval(q, items);
 
   const updateHeader = async (patch: Partial<Quotation>) => {
     const { error } = await supabase.from("quotations").update(patch).eq("id", q.id);
@@ -187,15 +194,15 @@ function QuotationDetail() {
           <Button variant="outline" size="sm" onClick={() => navigate({ to: "/quotations/$quotationId/print", params: { quotationId: q.id } })}>
             <Printer className="mr-2 size-4" /> Imprimir
           </Button>
-          <PdfButton quotationId={q.id} />
-          <ShareDialog tenantId={q.tenant_id} quotationId={q.id} />
+          {!blocked && <PdfButton quotationId={q.id} />}
+          {!blocked && <ShareDialog tenantId={q.tenant_id} quotationId={q.id} />}
           {canEdit && (
             <DuplicateButton
               quotationId={q.id}
               onDone={(newId) => navigate({ to: "/quotations/$quotationId", params: { quotationId: newId } })}
             />
           )}
-          {canEdit && q.status === "draft" && (
+          {canEdit && q.status === "draft" && !blocked && (
             <Button size="sm" onClick={async () => {
               await snapshotQuotationVersion(q.id, "Enviada al cliente").catch(() => {});
               await changeStatus("sent");
@@ -213,7 +220,7 @@ function QuotationDetail() {
               </Button>
             </>
           )}
-          {canEdit && (q.status === "accepted" || q.status === "sent") && (
+          {canEdit && !blocked && (q.status === "accepted" || q.status === "sent") && (
             <ConvertToOrderButton
               quotationId={q.id}
               onDone={(orderId) => navigate({ to: "/orders/$orderId", params: { orderId } })}
@@ -240,6 +247,16 @@ function QuotationDetail() {
           )}
         </div>
       </div>
+
+      {(maxDiscount > DISCOUNT_APPROVAL_THRESHOLD || q.approval_status !== "not_required") && (
+        <DiscountApprovalBanner
+          quotation={q}
+          maxDiscount={maxDiscount}
+          needsApproval={needsDiscountApproval(q, items)}
+          isAdmin={isAdmin}
+          onChanged={reload}
+        />
+      )}
 
       {/* Cabecera */}
       <Card>

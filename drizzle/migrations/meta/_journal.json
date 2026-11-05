@@ -8,6 +8,13 @@
       "when": 1793914863041,
       "tag": "0000_discount_approval_flow",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793914882051,
+      "tag": "0001_fix_discount_message",
+      "breakpoints": true
     }
   ]
 }

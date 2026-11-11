@@ -18,12 +18,21 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth, logAudit } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
+import { getStockAlert } from "@/lib/stock-alerts";
 import {
   fetchProducts, fetchCategories, toCSV, parseCSV, downloadFile,
   productSchema, nullifyEmpty,
 } from "@/lib/products";
 
 export const Route = createFileRoute("/_app/products/")({
+  head: () => ({ meta: [
+    { title: "Productos e inventario | Nexus ERP" },
+    { name: "description", content: "Catálogo de productos y alertas de stock mínimo por empresa." },
+    { property: "og:title", content: "Productos e inventario | Nexus ERP" },
+    { property: "og:description", content: "Catálogo de productos y alertas de stock mínimo por empresa." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: ProductsPage,
 });
 
@@ -53,6 +62,7 @@ function ProductsPage() {
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["products", tenantId, search, tag, categoryId, type, activeOnly, lowStock],
     enabled: !!tenantId,
+    refetchInterval: 30000,
     queryFn: () => fetchProducts(tenantId!, {
       search,
       tag: tag === "all" ? null : tag,
@@ -224,7 +234,8 @@ function ProductsPage() {
               </TableRow>
             ) : (
               products.map((p) => {
-                const isLow = p.type === "product" && Number(p.stock_current) <= Number(p.stock_min) && Number(p.stock_min) > 0;
+                const stockAlert = getStockAlert(p);
+                const isLow = stockAlert !== null;
                 return (
                   <TableRow key={p.id} className="cursor-pointer"
                     onClick={() => navigate({ to: "/products/$productId", params: { productId: p.id } })}>
@@ -241,7 +252,7 @@ function ProductsPage() {
                     </TableCell>
                     <TableCell className="text-right text-sm tabular-nums">
                       {p.type === "service" ? "—" : (
-                        <span className={isLow ? "text-destructive font-medium inline-flex items-center gap-1" : ""}>
+                        <span title={stockAlert ? `Mínimo: ${stockAlert.minimum} ${p.unit}` : undefined} className={isLow ? "text-destructive font-medium inline-flex items-center gap-1" : ""}>
                           {isLow && <AlertTriangle className="size-3" />}
                           {Number(p.stock_current).toLocaleString()}
                         </span>

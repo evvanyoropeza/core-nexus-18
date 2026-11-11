@@ -243,6 +243,35 @@ export type Database = {
           },
         ]
       }
+      notification_reads: {
+        Row: {
+          event_key: string
+          read_at: string
+          tenant_id: string
+          user_id: string
+        }
+        Insert: {
+          event_key: string
+          read_at?: string
+          tenant_id: string
+          user_id: string
+        }
+        Update: {
+          event_key?: string
+          read_at?: string
+          tenant_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_reads_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organization_settings: {
         Row: {
           branding: Json

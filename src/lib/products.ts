@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
+import { getStockAlert } from "@/lib/stock-alerts";
 
 export type Product = Database["public"]["Tables"]["products"]["Row"];
 export type ProductInsert = Database["public"]["Tables"]["products"]["Insert"];
@@ -135,7 +136,7 @@ export async function fetchProducts(tenantId: string, opts: {
   if (error) throw error;
   let rows = data ?? [];
   if (opts.lowStock) {
-    rows = rows.filter((p) => p.type === "product" && Number(p.stock_current) <= Number(p.stock_min));
+    rows = rows.filter((p) => getStockAlert(p) !== null);
   }
   return rows;
 }

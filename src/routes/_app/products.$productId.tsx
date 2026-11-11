@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { ArrowLeft, Plus, Trash2, ArrowDownCircle, ArrowUpCircle, Settings2 } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, ArrowDownCircle, ArrowUpCircle, Settings2, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { getStockAlert } from "@/lib/stock-alerts";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -33,6 +35,14 @@ import {
 type MovementType = "entry" | "exit" | "adjustment";
 
 export const Route = createFileRoute("/_app/products/$productId")({
+  head: () => ({ meta: [
+    { title: "Ficha de producto y kardex | Nexus ERP" },
+    { name: "description", content: "Movimientos de inventario, existencias y avisos de reorden del producto." },
+    { property: "og:title", content: "Ficha de producto y kardex | Nexus ERP" },
+    { property: "og:description", content: "Movimientos de inventario, existencias y avisos de reorden del producto." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: ProductDetailPage,
 });
 
@@ -47,10 +57,12 @@ function ProductDetailPage() {
   const canDelete = hasRole(["admin"]);
 
   const { data: product, isLoading } = useQuery({
-    queryKey: ["product", productId],
+    queryKey: ["product", productId, tenantId],
     enabled: !!tenantId,
+    refetchInterval: 30000,
     queryFn: async () => {
-      const { data, error } = await supabase.from("products").select("*").eq("id", productId).single();
+      if (!tenantId) throw new Error("Selecciona una empresa");
+      const { data, error } = await supabase.from("products").select("*").eq("id", productId).eq("tenant_id", tenantId).single();
       if (error) throw error;
       return data;
     },
@@ -59,7 +71,7 @@ function ProductDetailPage() {
   const { data: categories = [] } = useQuery({
     queryKey: ["product_categories", tenantId],
     enabled: !!tenantId,
-    queryFn: () => fetchCategories(tenantId!),
+    queryFn: () => tenantId ? fetchCategories(tenantId) : Promise.resolve([]),
   });
 
   const { data: tiers = [] } = useQuery({
@@ -71,13 +83,16 @@ function ProductDetailPage() {
   const isService = product?.type === "service";
 
   const { data: movements = [] } = useQuery({
-    queryKey: ["stock_movements", productId],
-    enabled: !!productId && !isService,
+    queryKey: ["stock_movements", productId, tenantId],
+    enabled: !!product && !!tenantId && !isService,
+    refetchInterval: 30000,
     queryFn: async () => {
+      if (!tenantId) throw new Error("Selecciona una empresa");
       const { data, error } = await supabase
         .from("stock_movements")
         .select("*")
         .eq("product_id", productId)
+        .eq("tenant_id", tenantId)
         .order("created_at", { ascending: false })
         .limit(200);
       if (error) throw error;
@@ -99,6 +114,7 @@ function ProductDetailPage() {
 
   const margin = marginPct(Number(product.list_price), Number(product.cost));
   const showCosts = canViewCosts(currentTenant?.role);
+  const stockAlert = getStockAlert(product);
 
   return (
     <div className="space-y-6">
@@ -125,9 +141,10 @@ function ProductDetailPage() {
                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={async () => {
+                    if (!tenantId) return;
                     const { error } = await supabase.from("products").delete().eq("id", product.id);
                     if (error) { toast.error(error.message); return; }
-                    await logAudit({ tenantId: tenantId!, action: "product.delete", entityType: "product", entityId: product.id, metadata: { sku: product.sku } });
+                    await logAudit({ tenantId, action: "product.delete", entityType: "product", entityId: product.id, metadata: { sku: product.sku } });
                     toast.success("Producto eliminado");
                     navigate({ to: "/products" });
                   }}
@@ -163,13 +180,14 @@ function ProductDetailPage() {
               categories={categories}
               submitting={saving}
               onSubmit={async (values) => {
+                if (!tenantId) return;
                 setSaving(true);
                 try {
                   const parsed = productSchema.parse(values);
                   const payload = nullifyEmpty(parsed);
                   const { error } = await supabase.from("products").update(payload).eq("id", product.id);
                   if (error) throw error;
-                  await logAudit({ tenantId: tenantId!, action: "product.update", entityType: "product", entityId: product.id, metadata: { sku: parsed.sku } });
+                  await logAudit({ tenantId, action: "product.update", entityType: "product", entityId: product.id, metadata: { sku: parsed.sku } });
                   toast.success("Producto actualizado");
                   qc.invalidateQueries({ queryKey: ["product", productId] });
                   qc.invalidateQueries({ queryKey: ["products", tenantId] });
@@ -200,10 +218,11 @@ function ProductDetailPage() {
                   <Button
                     type="button"
                     onClick={async () => {
+                      if (!tenantId) return;
                       const parsed = priceTierSchema.safeParse({ min_quantity: tierQty, price: tierPrice });
                       if (!parsed.success) { toast.error(parsed.error.issues[0]?.message); return; }
                       const { error } = await supabase.from("product_price_tiers").insert({
-                        tenant_id: tenantId!, product_id: product.id, ...parsed.data,
+                        tenant_id: tenantId, product_id: product.id, ...parsed.data,
                       });
                       if (error) { toast.error(error.message); return; }
                       setTierQty(""); setTierPrice("");
@@ -249,6 +268,21 @@ function ProductDetailPage() {
 
         {!isService && (
           <TabsContent value="inventory" className="mt-4 space-y-4">
+            {stockAlert && (
+              <Alert variant={stockAlert.status === "below_minimum" ? "destructive" : "default"} className={stockAlert.status === "at_minimum" ? "border-warning/50 bg-warning/10" : "bg-destructive/5"}>
+                <AlertTriangle className="size-4" />
+                <AlertTitle>{stockAlert.status === "below_minimum" ? "Stock por debajo del mínimo" : "Punto de reorden alcanzado"}</AlertTitle>
+                <AlertDescription>
+                  <p>Existencias: <strong>{stockAlert.current.toLocaleString()} {product.unit}</strong> · Mínimo de seguridad: <strong>{stockAlert.minimum.toLocaleString()} {product.unit}</strong>.</p>
+                  <p className="mt-1">{stockAlert.replenishment > 0 ? `Faltan ${stockAlert.replenishment.toLocaleString()} ${product.unit} para recuperar el mínimo de seguridad.` : "Programa la reposición antes de la siguiente salida."}</p>
+                </AlertDescription>
+              </Alert>
+            )}
+            <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+              <span>Stock actual: <strong className="tabular-nums">{Number(product.stock_current).toLocaleString()} {product.unit}</strong></span>
+              <span>Mínimo de seguridad: <strong className="tabular-nums">{Number(product.stock_min).toLocaleString()} {product.unit}</strong></span>
+              <Badge variant={stockAlert ? "destructive" : "secondary"}>{stockAlert ? "Reponer inventario" : Number(product.stock_min) > 0 ? "Sobre el mínimo" : "Sin mínimo configurado"}</Badge>
+            </div>
             {canEdit && (
               <Card>
                 <CardHeader>

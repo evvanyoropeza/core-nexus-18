@@ -14,6 +14,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/lib/auth";
 import { TrialBanner } from "@/components/billing/TrialBanner";
+import { NotificationBell } from "./NotificationBell";
 
 export function TopBar() {
   const { profile, user, signOut } = useAuth();
@@ -31,6 +32,7 @@ export function TopBar() {
       <SidebarTrigger />
       <Separator orientation="vertical" className="h-5" />
       <div className="flex-1" />
+      <NotificationBell />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="sm" className="gap-2">
